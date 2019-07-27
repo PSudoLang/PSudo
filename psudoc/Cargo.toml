@@ -1,0 +1,13 @@
+[package]
+name = "psudoc"
+version = "0.1.0"
+authors = ["RanolP <public.ranolp@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+libpsudoc = { path = "../libpsudoc" } 
+[dependencies.syntect]
+version = "3.2.0"
+features = ["parsing", "yaml-load"]

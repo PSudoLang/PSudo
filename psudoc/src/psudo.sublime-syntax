@@ -1,0 +1,154 @@
+%YAML 1.2
+---
+name: PSudo
+scope: source.psudo
+file_extensions: [psudo]
+
+contexts:
+  prototype:
+    - include: comments
+
+  main:
+    - include: keywords
+    - include: literals
+    - include: operators
+    - include: types
+    - include: groups
+
+  literals:
+    - include: numbers
+    - include: strings
+    - include: booleans
+
+  groups:
+    - match: \(
+      push: parenthesis
+      scope: punctuation.section.parens.begin.psudo
+    - match: \)
+      scope: invalid.illegal.stray-bracket-end
+    - match: \[
+      scope: punctuation.section.brackets.begin.psudo
+      push: bracket
+    - match: \]
+      scope: invalid.illegal.stray-bracket-end
+    - match: \{
+      push: brace
+      scope: punctuation.section.braces.begin.psudo
+    - match: \}
+      scope: invalid.illegal.stray-bracket-end
+
+  parenthesis:
+    - match: \)
+      pop: true
+      scope: punctuation.section.parens.end.psudo
+    - include: main
+  bracket:
+    - match: \]
+      pop: true
+      scope: punctuation.section.brackets.end.psudo
+    - include: main
+  brace:
+    - match: \}
+      pop: true
+      scope: punctuation.section.braces.end.psudo
+    - include: main
+
+  keywords:
+    - match: '\b(if|else|for|while|break|continue|loop|return)\b'
+      scope: keyword.control.psudo
+    - match: '\b(as|const|enum|extern|fn|impl|in|let|match|move|ref|self|Self|static|struct|super|trait|type|where)\b'
+      scope: keyword.other.psudo
+    - match: \b(input|output|log)\b
+      scope: keyword.other.psudo
+    - match: '(!in|!is)\b'
+      scope: keyword.operator.psudo
+
+  operators:
+    - match: '(\+|-|\*|\/|%)'
+      scope: keyword.operator.psudo
+    - match: '(<<|>>|&|\||~|\^)'
+      scope: keyword.operator.psudo
+    - match: '(&&|\|\||==|!=|<=|<|>=|>)'
+      scope: keyword.operator.psudo
+    - match: '(\+=|-=|\*=|\/=|%=|<<=|>>=|&=|\|=|~=|\^=|&&=|\|\|=|=)'
+      scope: keyword.operator.psudo
+    - match: '(\.\.<|\.\.=)'
+      scope: keyword.operator.psudo
+    - match: '->'
+      scope: punctuation.accessor.arrow.psudo
+
+  types:
+    - match: \b(i8|i16|i32|i64)\b
+      scope: support.type.psudo
+    - match: \b(u8|u16|u32|u64)\b
+      scope: support.type.psudo
+    - match: \b(f32|f64)\b
+      scope: support.type.psudo
+    - match: \b(str|bool)\b
+      scope: support.type.psudo
+    - match: \b(Array|2dArray|3dArray|4dArray|5dArray)\b
+      scope: support.type.psudo
+
+  numbers:
+    - match: '\b[+-]?(0b[01]+|0o[0-7]+|0x[0-9a-fA-F]+|[0-9]+(\.[0-9]+)?([eE][0-9]+)?)\b'
+      scope: constant.numeric.psudo
+
+  booleans:
+    - match: '\b(true|false)\b'
+      scope: constant.language.psudo
+
+  strings:
+    - match: '"'
+      scope: punctuation.definition.string.begin.psudo
+      push: inside_string
+    - match: ''''
+      scope: punctuation.definition.string.begin.psudo
+      push: inside_character
+
+  inside_string:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.double.psudo
+    - match: '\\[0btnfr\"\''\\]'
+      scope: constant.character.escape.psudo
+    - match: '\\u\{[0-9a-fA-F]{4}\}'
+      scope: constant.character.escape.psudo
+    - match: '\\(u\{[^\} ]*\}?|[^0btnfr\"\''\\])'
+      scope: invalid.illegal.psudo
+    - match: '\$\{.*\}'
+      scope: constant.other.placeholder.psudo
+    - match: '"'
+      scope: punctuation.definition.string.end.psudo
+      pop: true
+
+  inside_character:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.single.psudo
+    - match: '\\[0btnfr\"\''\\]'
+      scope: constant.character.escape.psudo
+    - match: '\\u\{[0-9a-fA-F]{4}\}'
+      scope: constant.character.escape.psudo
+    - match: '\\(u\{[^\} ]*\}?|[^0btnfr\"\''\\])'
+      scope: invalid.illegal.psudo
+    - match: ''''
+      scope: punctuation.definition.char.end.psudo
+      pop: true
+
+  comments:
+    - match: '#'
+      scope: meta.preprocessor.psudo
+      push:
+        - meta_scope: comment.line.double-slash.psudo
+        - match: $\n?
+          pop: true
+    - match: '//'
+      scope: punctuation.definition.comment.psudo
+      push:
+        - meta_scope: comment.line.double-slash.psudo
+        - match: $\n?
+          pop: true
+    - match: '/\*'
+      scope: punctuation.definition.comment.psudo
+      push:
+        - meta_scope: comment.block.psudo
+        - match: \*/
+          pop: true
