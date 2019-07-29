@@ -3,33 +3,71 @@ use crate::coretypes::{Span, Spanned};
 
 pub enum Expression {
     Literal(Literal),
-    UnaryOperator(Span, UnaryOperatorType, Box<Expression>),
-    BinaryOperator(Box<Expression>, BinaryOperatorType, Box<Expression>),
-    Block(Vec<Statement>, Box<Expression>),
+    Operator(OperatorExpression),
+    Block(Span, Vec<Statement>, Box<Expression>),
+    Member(MemberExpression),
     FieldGet(Span, Box<Expression>, String),
-    FunctionCall(FunctionCall),
+    ControlFlow(ControlFlowExpression),
 }
 
 impl Spanned for Expression {
     fn span(&self) -> Span {
         match self {
             Expression::Literal(literal) => literal.span(),
-            Expression::UnaryOperator(span, ..) => span.clone(),
-            Expression::BinaryOperator(lhs, _, rhs) => lhs
-                .span()
-                .joined(rhs.span())
-                .expect("AST node must have span"),
+            Expression::Operator(expression) => expression.span(),
             Expression::FieldGet(span, ..) => span.clone(),
-            Expression::Block(statements, expression) => statements
-                .span()
-                .joined(expression.span())
-                .expect("AST node must have span"),
-            Expression::FunctionCall(function_call) => function_call.span.clone(),
+            Expression::Block(span, ..) => span.clone(),
+            Expression::Member(expression) => expression.span(),
+            Expression::ControlFlow(expression) => expression.span(),
         }
     }
 }
 
-pub struct FunctionCall {
+pub enum OperatorExpression {
+    Unary(Span, UnaryOperator, Box<Expression>),
+    Binary(Span, BinaryOperator, Box<Expression>, Box<Expression>),
+    Call(Span, String, Vec<Expression>),
+}
+
+impl Spanned for OperatorExpression {
+    fn span(&self) -> Span {
+        match self {
+            OperatorExpression::Unary(span, ..) => span.clone(),
+            OperatorExpression::Binary(span, ..) => span.clone(),
+            OperatorExpression::Call(span, ..) => span.clone(),
+        }
+    }
+}
+
+pub enum MemberExpression {
+    Field(Span),
+    Method(Span),
+}
+
+impl Spanned for MemberExpression {
+    fn span(&self) -> Span {
+        match self {
+            MemberExpression::Field(span, ..) => span.clone(),
+            MemberExpression::Method(span, ..) => span.clone(),
+        }
+    }
+}
+
+pub enum ControlFlowExpression {
+    Loop(Span),
+    If(Span),
+}
+
+impl Spanned for ControlFlowExpression {
+    fn span(&self) -> Span {
+        match self {
+            ControlFlowExpression::Loop(span, ..) => span.clone(),
+            ControlFlowExpression::If(span, ..) => span.clone(),
+        }
+    }
+}
+
+pub struct CallExpression {
     span: Span,
     parent_type: Type,
     name: String,
@@ -55,14 +93,14 @@ impl Spanned for Literal {
     }
 }
 
-pub enum UnaryOperatorType {
+pub enum UnaryOperator {
     Plus,       // +
     Minus,      // -
     LogicalNot, // !
     BitwiseNot, // ~
 }
 
-pub enum BinaryOperatorType {
+pub enum BinaryOperator {
     LogicalAnd,        // &&
     LogicalOr,         // ||
     Equals,            // ==
@@ -81,4 +119,5 @@ pub enum BinaryOperatorType {
     Add,               // +
     Subtract,          // -
     Divide,            // /
+    Index,             // [x]
 }

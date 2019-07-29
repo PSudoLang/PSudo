@@ -1,5 +1,5 @@
+use super::Rule;
 use crate::coretypes::{CodeCharacter, CodeCharacterCategory, TokenCategory};
-use crate::tokenize::rules::Rule;
 use crate::tokenize::{RuleCategory, TokenizerCommand};
 
 pub struct RuleWhitespace;

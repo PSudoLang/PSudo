@@ -1,4 +1,4 @@
-use super::Expression;
+use super::{Declaration, Expression};
 use crate::coretypes::{Span, Spanned};
 
 pub enum Statement {
@@ -7,6 +7,7 @@ pub enum Statement {
     Assign(Span, String, Expression),
     Input(Span),
     Output(Span),
+    Declaration(Declaration),
 }
 
 impl Spanned for Statement {
@@ -17,6 +18,7 @@ impl Spanned for Statement {
             Statement::Assign(span, ..) => span.clone(),
             Statement::Input(span, ..) => span.clone(),
             Statement::Output(span, ..) => span.clone(),
+            Statement::Declaration(declaration) => declaration.span(),
         }
     }
 }

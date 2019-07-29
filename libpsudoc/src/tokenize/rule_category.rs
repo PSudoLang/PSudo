@@ -9,4 +9,6 @@ pub enum RuleCategory {
     NumberExponent,
     NumberDecimal,
     Punctuation,
+    LineComment,
+    BlockComment,
 }

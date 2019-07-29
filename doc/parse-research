@@ -1,0 +1,21 @@
+## Statement
+Item
+Let
+Expression
+
+
+## Item
+TypeAlias : whenever
+Function -> Struct -> Trait/Impl -> Enum
+
+## Expression
+
+Block : whenever
+Literal + Array + Tuple + Struct
+Operator + Index + Range
+Control Flow (If & If Let, Match, Loop)
+Return
+Member(Field, Method, Enum Variant)
+Anonymous Function
+Path
+Closure () -> {}

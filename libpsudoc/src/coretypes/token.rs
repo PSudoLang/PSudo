@@ -1,6 +1,6 @@
 use crate::coretypes::Span;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum TokenCategory {
     Whitespace,
     Separator,
@@ -9,11 +9,12 @@ pub enum TokenCategory {
     Identifier,
     PlaceholderName,
     LiteralString,
+    NotEndedLiteralString,
     LiteralNumber,
     LiteralBoolean,
-    LineCommentStart,
-    BlockCommentStart,
-    BlockCommentEnd,
+    LineComment,
+    BlockComment,
+    NotEndedBlockComment,
     Unknown,
 }
 

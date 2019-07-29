@@ -1,8 +1,8 @@
+use super::Rule;
 use crate::coretypes::{CodeCharacter, CodeCharacterCategory, TokenCategory};
-use crate::tokenize::rules::Rule;
 use crate::tokenize::{RuleCategory, TokenizerCommand};
 
-const MULTI_CHARACTER_PUNCTUATIONS: &[(&'static str, TokenCategory)] = &[
+const MULTI_CHARACTER_PUNCTUATIONS: &[(&str, TokenCategory)] = &[
     ("&&", TokenCategory::Punctuation),
     ("||", TokenCategory::Punctuation),
     ("==", TokenCategory::Punctuation),
@@ -12,13 +12,12 @@ const MULTI_CHARACTER_PUNCTUATIONS: &[(&'static str, TokenCategory)] = &[
     ("<<", TokenCategory::Punctuation),
     (">=", TokenCategory::Punctuation),
     (">>", TokenCategory::Punctuation),
-    ("//", TokenCategory::LineCommentStart),
-    ("/*", TokenCategory::BlockCommentStart),
-    ("*/", TokenCategory::BlockCommentEnd),
     ("**", TokenCategory::Punctuation),
     ("->", TokenCategory::Punctuation),
     ("--", TokenCategory::Punctuation),
     ("++", TokenCategory::Punctuation),
+    ("..", TokenCategory::Punctuation),
+    ("..<", TokenCategory::Punctuation),
 ];
 
 pub struct RulePunctuation;
@@ -27,12 +26,18 @@ impl Rule for RulePunctuation {
     fn process(character: &CodeCharacter, characters: &[CodeCharacter]) -> TokenizerCommand {
         match character.category {
             CodeCharacterCategory::Punctuation if !characters.is_empty() => {
+                let operator: String = [characters, &[character.clone()]]
+                    .concat()
+                    .iter()
+                    .map(|character| character.data)
+                    .collect();
+                if operator == "//" {
+                    return TokenizerCommand::Continue(RuleCategory::LineComment, false);
+                }
+                if operator == "/*" {
+                    return TokenizerCommand::Continue(RuleCategory::BlockComment, false);
+                }
                 for punctuation_set in MULTI_CHARACTER_PUNCTUATIONS {
-                    let operator: String = [characters, &[character.clone()]]
-                        .concat()
-                        .iter()
-                        .map(|character| character.data)
-                        .collect();
                     if punctuation_set.0.starts_with(&operator) {
                         return TokenizerCommand::Continue(RuleCategory::Punctuation, true);
                     }

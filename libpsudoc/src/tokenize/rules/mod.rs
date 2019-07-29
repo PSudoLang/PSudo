@@ -1,3 +1,4 @@
+mod comment;
 mod identifier;
 mod initial;
 mod newline_cr;
@@ -9,6 +10,7 @@ mod whitespace;
 use crate::coretypes::CodeCharacter;
 use crate::tokenize::TokenizerCommand;
 
+pub use comment::*;
 pub use identifier::*;
 pub use initial::*;
 pub use newline_cr::*;

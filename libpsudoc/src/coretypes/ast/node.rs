@@ -1,11 +1,12 @@
-use super::{Declaration, Expression, Statement};
+use super::Statement;
 use crate::coretypes::{Span, Spanned};
+
+type IsBlockComment = bool;
 
 pub enum Node {
     Root(Vec<Node>),
     CompilerDirective { name: String },
-    Comment(Span, String),
-    Declaration(Declaration),
+    Comment(Span, IsBlockComment),
     Statement(Statement),
 }
 
@@ -16,7 +17,6 @@ impl Spanned for Node {
             // TODO
             Node::CompilerDirective { .. } => Span::FIRST_COLUMN,
             Node::Comment(span, ..) => span.clone(),
-            Node::Declaration(declaration) => declaration.span(),
             Node::Statement(statement) => statement.span(),
         }
     }

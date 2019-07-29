@@ -94,6 +94,12 @@ impl Iterator for Tokenizer {
                     RuleCategory::Punctuation => {
                         RulePunctuation::process(&character, &self.character_cache)
                     }
+                    RuleCategory::LineComment => {
+                        RuleLineComment::process(&character, &self.character_cache)
+                    }
+                    RuleCategory::BlockComment => {
+                        RuleBlockComment::process(&character, &self.character_cache)
+                    }
                 };
                 let to_consume = command.to_consume();
                 if to_consume {

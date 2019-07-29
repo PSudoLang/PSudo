@@ -6,6 +6,7 @@ use std::path::Path;
 use crate::util::read_file;
 
 use libpsudoc::tokenize::Tokenizer;
+use libpsudoc::parse::{ParseContext, ParseResult, ParseFunction, Root};
 
 fn main() {
     let source = read_file(&Path::new("./test.psudo"));
@@ -27,6 +28,8 @@ fn main() {
                 .collect::<String>()
         );
     }
+
+    let parsed: ParseResult = Root::try_parse(&mut ParseContext::new(tokenized));
 
     let (syntax_reference, syntax_set, theme) = code_highlight::initialize();
     let highlighted_lines =
