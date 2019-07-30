@@ -1,5 +1,5 @@
-use super::{Statement};
-use crate::coretypes::{RichDebug, CompileSession, Span, Spanned};
+use super::Statement;
+use crate::coretypes::{CompileSession, RichDebug, Span, Spanned};
 
 type IsBlockComment = bool;
 
@@ -33,11 +33,11 @@ impl RichDebug for Node {
                 "Root {{\n{}\n}}",
                 nodes
                     .iter()
-                    .map(|node| node.rich_debug(session))
-                    .collect::<Vec<_>>()
-                    .join("\n")
-                    .split('\n')
-                    .map(|line| format!("  {}", line))
+                    .flat_map(|node| node
+                        .rich_debug(session)
+                        .split('\n')
+                        .map(|line| String::from("  ") + line)
+                        .collect::<Vec<_>>())
                     .collect::<Vec<_>>()
                     .join("\n")
             ),
