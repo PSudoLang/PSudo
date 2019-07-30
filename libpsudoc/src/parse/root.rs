@@ -1,4 +1,4 @@
-use super::{BlockComment, LineComment, ParseContext, ParseFunction, ParseResult};
+use super::*;
 use crate::coretypes::Node;
 
 type ToContinue = bool;
@@ -9,7 +9,14 @@ impl ParseFunction for Root {
     fn try_parse(context: &mut ParseContext) -> ParseResult {
         let mut nodes = Vec::new();
 
-        fn try_parse<F>(nodes: &mut Vec<Node>, context: &mut ParseContext, parse_function: F) -> ToContinue where F: Fn(&mut ParseContext) -> ParseResult {
+        fn try_parse<F>(
+            nodes: &mut Vec<Node>,
+            context: &mut ParseContext,
+            parse_function: F,
+        ) -> ToContinue
+        where
+            F: Fn(&mut ParseContext) -> ParseResult,
+        {
             let sandbox = &mut context.create_sandbox();
             let result = parse_function(sandbox);
             match result {
@@ -22,7 +29,7 @@ impl ParseFunction for Root {
                     context.current += sandbox.current;
                     true
                 }
-                ParseResult::Fail => false
+                ParseResult::Fail => false,
             }
         }
 
@@ -31,6 +38,9 @@ impl ParseFunction for Root {
                 continue;
             }
             if try_parse(&mut nodes, context, BlockComment::try_parse) {
+                continue;
+            }
+            if try_parse(&mut nodes, context, Whitespace::try_parse) {
                 continue;
             }
 

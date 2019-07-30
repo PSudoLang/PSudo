@@ -1,32 +1,30 @@
-use crate::coretypes::{CodeCharacter, LineColumn, Span, Token, TokenCategory};
+use crate::coretypes::{CodeCharacter, SourceFile, Span, Token, TokenCategory};
 use crate::tokenize::rules::*;
 use crate::tokenize::{RuleCategory, TokenizerCommand};
 
 pub struct Tokenizer {
+    source_file: u64,
     characters: Vec<CodeCharacter>,
     offset: usize,
     character_cache: Vec<CodeCharacter>,
-    start_offset: LineColumn,
+    start_offset: usize,
     rule_category: RuleCategory,
 }
 
 impl Tokenizer {
-    pub fn new(source: Vec<char>) -> Tokenizer {
+    pub fn new(source_file: &SourceFile) -> Tokenizer {
         Tokenizer {
-            characters: source
-                .into_iter()
+            source_file: source_file.unique_key,
+            characters: source_file
+                .src
+                .chars()
                 .map(CodeCharacter::new)
                 .chain(vec![CodeCharacter::EOF].into_iter())
                 .collect(),
             offset: 0,
             character_cache: Vec::new(),
-            start_offset: LineColumn::FIRST_COLUMN,
+            start_offset: 0,
             rule_category: RuleCategory::Initial,
-        }
-    }
-    fn current_offset(&self) -> LineColumn {
-        LineColumn {
-            offset: self.offset,
         }
     }
 
@@ -34,8 +32,9 @@ impl Tokenizer {
         Token {
             category,
             span: Span {
-                start: self.start_offset.clone(),
-                end: self.current_offset(),
+                source_file: Some(self.source_file),
+                start_offset: self.start_offset,
+                end_offset: self.offset,
             },
         }
     }
@@ -54,7 +53,7 @@ impl Tokenizer {
     }
 
     fn reset_state(&mut self) {
-        self.start_offset = self.current_offset();
+        self.start_offset = self.offset;
         self.rule_category = RuleCategory::Initial;
         self.character_cache.clear();
     }

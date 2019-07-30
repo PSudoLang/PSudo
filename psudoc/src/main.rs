@@ -3,37 +3,51 @@ mod util;
 
 use std::path::Path;
 
-use crate::util::read_file;
-
+use libpsudoc::coretypes::{CompileSession, RichDebug, SourceFile};
+use libpsudoc::parse::{ParseContext, ParseFunction, ParseResult, Root};
 use libpsudoc::tokenize::Tokenizer;
-use libpsudoc::parse::{ParseContext, ParseResult, ParseFunction, Root};
 
 fn main() {
-    let source = read_file(&Path::new("./test.psudo"));
-    let source: &'static str = Box::leak(source.into_boxed_str());
+    let source = SourceFile::create_real(Path::new("./test.psudo")).unwrap();
+    let source_string = source.src.clone();
 
-    // println!("{}", source);
+    let mut compile_session = CompileSession::new();
 
-    let tokenized: Vec<_> = Tokenizer::new(source.chars().collect::<Vec<_>>()).collect();
+    let tokenized: Vec<_> = Tokenizer::new(&source).collect();
+
+    compile_session.add_source_file(source);
 
     for token in tokenized.iter() {
         println!(
             "Token({:?}, span={}, {:?})",
             token.category,
-            token.span,
-            source
+            // token.span,
+            token.span.rich_debug(&compile_session),
+            source_string
                 .chars()
-                .skip(token.span.start.offset)
-                .take(token.span.end.offset - token.span.start.offset)
+                .skip(token.span.start_offset)
+                .take(token.span.length())
                 .collect::<String>()
         );
     }
 
     let parsed: ParseResult = Root::try_parse(&mut ParseContext::new(tokenized));
 
+    match parsed {
+        ParseResult::Success(node) => {
+            println!("{}", node.rich_debug(&compile_session));
+        }
+        ParseResult::Skip => {
+            println!("Parse Skipped");
+        }
+        ParseResult::Fail => {
+            println!("Parse Failed");
+        }
+    }
+
     let (syntax_reference, syntax_set, theme) = code_highlight::initialize();
     let highlighted_lines =
-        code_highlight::highlight(&syntax_reference, &syntax_set, &theme, &source);
+        code_highlight::highlight(&syntax_reference, &syntax_set, &theme, &source_string);
 
     println!();
 

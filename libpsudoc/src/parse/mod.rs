@@ -2,15 +2,12 @@ use crate::coretypes::{Node, Token};
 
 pub struct ParseContext {
     tokens: Vec<Token>,
-    current: usize
+    current: usize,
 }
 
 impl ParseContext {
     pub fn new(tokens: Vec<Token>) -> ParseContext {
-        ParseContext {
-            tokens,
-            current: 0
-        }
+        ParseContext { tokens, current: 0 }
     }
 
     pub fn has_next(&self) -> bool {
@@ -34,7 +31,7 @@ impl ParseContext {
             None
         }
     }
-    
+
     pub fn create_sandbox(&self) -> ParseContext {
         ParseContext {
             tokens: self
@@ -43,7 +40,7 @@ impl ParseContext {
                 .into_iter()
                 .skip(self.current)
                 .collect::<Vec<_>>(),
-            current: 0
+            current: 0,
         }
     }
 }
@@ -57,7 +54,7 @@ pub enum ParseResult {
 impl ParseResult {
     pub fn or<F>(self, or_function: F) -> ParseResult
     where
-        F: FnOnce() -> ParseResult
+        F: FnOnce() -> ParseResult,
     {
         match &self {
             ParseResult::Success(..) => self,
@@ -71,7 +68,9 @@ pub trait ParseFunction {
 }
 
 mod comment;
+mod ignore;
 mod root;
 
 pub use comment::*;
+pub use ignore::*;
 pub use root::*;

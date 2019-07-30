@@ -1,5 +1,6 @@
 use super::{Statement, Type};
 use crate::coretypes::{Span, Spanned};
+use std::fmt::Display;
 
 pub enum Expression {
     Literal(Literal),
