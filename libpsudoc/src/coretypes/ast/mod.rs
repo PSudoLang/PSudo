@@ -1,5 +1,3 @@
-use crate::coretypes::CompileSession;
-
 mod declaration;
 mod expression;
 mod node;

@@ -43,14 +43,17 @@ impl SourceFile {
         SourceFile {
             path,
             src: src.clone(),
-            line_begins: [vec![0], src
-                .char_indices()
-                .filter(|(_, character)| {
-                    CodeCharacter::new(*character).category
-                        == CodeCharacterCategory::VerticalSpace
-                })
-                .map(|(offset, _)| offset + 1)
-                .collect()].concat(),
+            line_begins: [
+                vec![0],
+                src.char_indices()
+                    .filter(|(_, character)| {
+                        CodeCharacter::new(*character).category
+                            == CodeCharacterCategory::VerticalSpace
+                    })
+                    .map(|(offset, _)| offset + 1)
+                    .collect(),
+            ]
+            .concat(),
             unique_key: ID.with(|id| {
                 *id.borrow_mut() += 1;
                 *id.borrow()
