@@ -1,5 +1,6 @@
-use crate::coretypes::Span;
+use crate::coretypes::{CompileSession, Span};
 
+#[derive(Debug, Clone)]
 pub enum DiagnosticLevel {
     Error,
     Warning,
@@ -7,8 +8,15 @@ pub enum DiagnosticLevel {
     Help,
 }
 
+#[derive(Clone)]
 pub struct Diagnostic {
-    span: Span,
-    level: DiagnosticLevel,
-    message: String,
+    pub span: Span,
+    pub level: DiagnosticLevel,
+    pub message: String,
+}
+
+impl Diagnostic {
+    pub fn emit_to(&self, session: &mut CompileSession) {
+        session.add_diagnostic(self.clone());
+    }
 }

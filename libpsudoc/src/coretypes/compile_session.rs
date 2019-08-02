@@ -21,4 +21,12 @@ impl CompileSession {
     pub fn get_source_file(&self, key: u64) -> Option<&SourceFile> {
         self.files.get(&key)
     }
+
+    pub fn add_diagnostic(&mut self, diagnostic: Diagnostic) {
+        self.diagnostics.push(diagnostic);
+    }
+
+    pub fn diagnostics(&self) -> &Vec<Diagnostic> {
+        &self.diagnostics
+    }
 }

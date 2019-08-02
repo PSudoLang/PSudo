@@ -1,5 +1,5 @@
 use super::CompileSession;
-use crate::coretypes::{LineColumn, RichDebug, SourceFile};
+use crate::coretypes::{Diagnostic, DiagnosticLevel, LineColumn, RichDebug, SourceFile};
 use std::fmt::Display;
 
 #[derive(Debug, Clone)]
@@ -20,9 +20,13 @@ impl Span {
         self.end_offset - self.start_offset
     }
 
-    pub fn start(&self, session: &CompileSession) -> LineColumn {
+    pub fn source_file<'a>(&self, session: &'a CompileSession) -> Option<&'a SourceFile> {
         self.source_file
             .and_then(|key| session.get_source_file(key))
+    }
+
+    pub fn start(&self, session: &CompileSession) -> LineColumn {
+        self.source_file(session)
             .map(|source_file| {
                 let (line, column) = match source_file.line_begins.binary_search(&self.start_offset)
                 {
@@ -39,8 +43,7 @@ impl Span {
     }
 
     pub fn end(&self, session: &CompileSession) -> LineColumn {
-        self.source_file
-            .and_then(|key| session.get_source_file(key))
+        self.source_file(session)
             .map(|source_file| {
                 let (line, column) = match source_file.line_begins.binary_search(&self.end_offset) {
                     Ok(line) => (line + 1, 0),
@@ -79,8 +82,7 @@ impl Span {
     }
 
     pub fn source_text(&self, session: &CompileSession) -> String {
-        self.source_file
-            .and_then(|key| session.get_source_file(key))
+        self.source_file(session)
             .map(|source_file| {
                 source_file
                     .src
@@ -89,7 +91,39 @@ impl Span {
                     .take(self.length())
                     .collect::<String>()
             })
-            .unwrap_or("".to_string())
+            .unwrap_or_else(|| "".to_string())
+    }
+
+    pub fn diagnostic_error<T: ToString>(&self, message: T) -> Diagnostic {
+        Diagnostic {
+            span: self.clone(),
+            level: DiagnosticLevel::Error,
+            message: message.to_string(),
+        }
+    }
+
+    pub fn diagnostic_warning<T: ToString>(&self, message: T) -> Diagnostic {
+        Diagnostic {
+            span: self.clone(),
+            level: DiagnosticLevel::Warning,
+            message: message.to_string(),
+        }
+    }
+
+    pub fn diagnostic_note<T: ToString>(&self, message: T) -> Diagnostic {
+        Diagnostic {
+            span: self.clone(),
+            level: DiagnosticLevel::Note,
+            message: message.to_string(),
+        }
+    }
+
+    pub fn diagnostic_help<T: ToString>(&self, message: T) -> Diagnostic {
+        Diagnostic {
+            span: self.clone(),
+            level: DiagnosticLevel::Help,
+            message: message.to_string(),
+        }
     }
 }
 

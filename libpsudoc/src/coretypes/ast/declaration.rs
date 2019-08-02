@@ -1,6 +1,5 @@
 use super::{Expression, Type};
 use crate::coretypes::{Span, Spanned};
-use std::fmt::Display;
 
 pub enum Declaration {
     Variable(Span, String, Expression),

@@ -1,6 +1,5 @@
-use super::{Statement, Type};
-use crate::coretypes::{Span, Spanned};
-use std::fmt::Display;
+use super::Statement;
+use crate::coretypes::{CompileSession, RichDebug, Span, Spanned};
 
 pub enum Expression {
     Literal(Literal),
@@ -20,6 +19,15 @@ impl Spanned for Expression {
             Expression::Block(span, ..) => span.clone(),
             Expression::Member(expression) => expression.span(),
             Expression::ControlFlow(expression) => expression.span(),
+        }
+    }
+}
+
+impl RichDebug for Expression {
+    fn rich_debug(&self, session: &CompileSession) -> String {
+        match self {
+            Expression::Literal(literal) => literal.rich_debug(session),
+            _ => "Unknown Expression".into(),
         }
     }
 }
@@ -68,18 +76,21 @@ impl Spanned for ControlFlowExpression {
     }
 }
 
-pub struct CallExpression {
-    span: Span,
-    parent_type: Type,
-    name: String,
-    parameters: Vec<Expression>,
-}
-
 pub enum Literal {
     Boolean(Span, bool),
     String(Span, String),
-    Integer(Span, String),
-    Decimal(Span, String),
+    Integer(Span),
+    Decimal(Span),
+}
+
+impl RichDebug for Literal {
+    fn rich_debug(&self, session: &CompileSession) -> String {
+        match self {
+            Literal::Boolean(.., val) => format!("{:?}", val),
+            Literal::String(.., val) => format!("{:?}", val),
+            _ => "Unknown Literal".into(),
+        }
+    }
 }
 
 impl Spanned for Literal {
@@ -87,8 +98,8 @@ impl Spanned for Literal {
         match self {
             Literal::Boolean(span, ..) => span,
             Literal::String(span, ..) => span,
-            Literal::Integer(span, ..) => span,
-            Literal::Decimal(span, ..) => span,
+            Literal::Integer(span) => span,
+            Literal::Decimal(span) => span,
         }
         .clone()
     }

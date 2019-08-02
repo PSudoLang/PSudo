@@ -1,5 +1,4 @@
-// Parse Comment
-/* Also
- * Parse
- */  
-// Comments
+// Prints "Hello world!"
+output "Hello, world!"
+output "Hello,", "world!"
+output "Hello, world!" \

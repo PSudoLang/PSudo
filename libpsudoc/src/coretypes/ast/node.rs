@@ -23,7 +23,7 @@ impl Spanned for Node {
 }
 
 pub struct Type {
-    name: String,
+    pub name: String,
 }
 
 impl RichDebug for Node {
@@ -46,7 +46,8 @@ impl RichDebug for Node {
                 if *is_block_comment { "Block" } else { "Line" },
                 span.source_text(session)
             ),
-            _ => "Unknown Node".to_string(),
+            Node::Statement(statement) => statement.rich_debug(session),
+            _ => "Unknown Node".into(),
         }
     }
 }

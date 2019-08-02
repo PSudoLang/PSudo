@@ -8,17 +8,17 @@ pub enum LineColumn {
 }
 
 impl LineColumn {
-    fn line(&self) -> usize {
+    pub fn line(&self) -> usize {
         match self {
             LineColumn::Invalid => 0,
-            LineColumn::Valid { line, .. } => line.clone(),
+            LineColumn::Valid { line, .. } => *line,
         }
     }
 
-    fn column(&self) -> usize {
+    pub fn column(&self) -> usize {
         match self {
             LineColumn::Invalid => 0,
-            LineColumn::Valid { column, .. } => column.clone(),
+            LineColumn::Valid { column, .. } => *column,
         }
     }
 }

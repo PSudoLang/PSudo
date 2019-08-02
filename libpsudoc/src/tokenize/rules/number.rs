@@ -38,7 +38,10 @@ pub struct RuleNumber;
 impl Rule for RuleNumber {
     fn process(character: &CodeCharacter, characters: &[CodeCharacter]) -> TokenizerCommand {
         match character.category {
-            CodeCharacterCategory::Punctuation if character.data == '.' => {
+            CodeCharacterCategory::Punctuation
+                if character.data == '.'
+                    && get_literal_type(characters) == LiteralType::Decimal =>
+            {
                 TokenizerCommand::Continue(RuleCategory::NumberDecimal, true)
             }
             CodeCharacterCategory::Identifiable => {

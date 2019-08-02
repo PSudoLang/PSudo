@@ -72,6 +72,13 @@ impl SourceFile {
         }
     }
 
+    pub fn path(&self) -> String {
+        match &self.path {
+            SourceFilePath::Real(path) => path.to_string_lossy().to_string(),
+            SourceFilePath::Virtual(s) => s.clone(),
+        }
+    }
+
     pub fn is_real(&self) -> bool {
         if let SourceFilePath::Real(_) = self.path {
             true

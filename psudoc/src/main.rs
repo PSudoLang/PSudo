@@ -1,14 +1,20 @@
 mod code_highlight;
+mod debug_diagnostic;
 mod util;
 
 use std::path::Path;
 
+use debug_diagnostic::debug_diagnostic;
 use libpsudoc::coretypes::{CompileSession, RichDebug, SourceFile};
 use libpsudoc::parse::{ParseContext, ParseFunction, ParseResult, Root};
 use libpsudoc::tokenize::Tokenizer;
 
+const PRINT_TOKENS: bool = false;
+const PRINT_NODES: bool = true;
+
 fn main() {
     let source = SourceFile::create_real(Path::new("./test.psudo")).unwrap();
+    let source_key = source.unique_key;
     let source_string = source.src.clone();
 
     let mut compile_session = CompileSession::new();
@@ -17,30 +23,43 @@ fn main() {
 
     compile_session.add_source_file(source);
 
-    for token in tokenized.iter() {
-        println!(
-            "Token({:?}, span={}, {:?})",
-            token.category,
-            // token.span,
-            token.span.rich_debug(&compile_session),
-            source_string
-                .chars()
-                .skip(token.span.start_offset)
-                .take(token.span.length())
-                .collect::<String>()
+    if PRINT_TOKENS {
+        for token in tokenized.iter() {
+            println!(
+                "Token({:?}, span={}, {:?})",
+                token.category,
+                // token.span,
+                token.span.rich_debug(&compile_session),
+                source_string
+                    .chars()
+                    .skip(token.span.start_offset)
+                    .take(token.span.length())
+                    .collect::<String>()
+            );
+        }
+    }
+    let parsed = Root::try_parse(&mut ParseContext::new(tokenized), &mut compile_session);
+
+    for diagnostic in compile_session.diagnostics() {
+        debug_diagnostic(
+            diagnostic,
+            compile_session
+                .get_source_file(source_key)
+                .expect("Added file"),
+            &compile_session,
         );
     }
 
-    let parsed: ParseResult = Root::try_parse(&mut ParseContext::new(tokenized));
-
     match parsed {
         ParseResult::Success(node) => {
-            println!("{}", node.rich_debug(&compile_session));
+            if PRINT_NODES {
+                println!("{}", node.rich_debug(&compile_session));
+            }
         }
         ParseResult::Skip => {
             println!("Parse Skipped");
         }
-        ParseResult::Fail => {
+        ParseResult::Fail(_) => {
             println!("Parse Failed");
         }
     }
