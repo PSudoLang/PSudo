@@ -23,7 +23,7 @@ impl ParseContext {
     }
 
     pub fn last_read_token(&self) -> &Token {
-        &self.tokens[std::cmp::min(self.tokens.len() - 1, self.current - 1)]
+        &self.tokens[std::cmp::max(1, std::cmp::min(self.tokens.len(), self.current)) - 1]
     }
 
     pub fn next(&mut self) -> Option<&Token> {

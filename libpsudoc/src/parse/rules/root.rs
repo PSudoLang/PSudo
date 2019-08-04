@@ -14,6 +14,7 @@ impl ParseFunction for Root {
         let mut failed = false;
 
         while context.has_next() {
+            println!("{}", context.last_read_token().span.source_text(session));
             context.skip_whitespaces();
             match try_all(
                 vec![
@@ -30,10 +31,8 @@ impl ParseFunction for Root {
                 }
                 ParseResult::Skip => {}
                 ParseResult::Fail(val) => {
-                    let token = context.next().expect("Guaranteed by while");
-
                     if !val {
-                        token
+                        context.last_read_token()
                             .span
                             .diagnostic_error("Unexpected token")
                             .emit_to(session);

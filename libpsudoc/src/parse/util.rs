@@ -21,5 +21,5 @@ pub fn try_all<T>(
         }
     }
 
-    ParseResult::Fail(true)
+    ParseResult::Fail(false)
 }
