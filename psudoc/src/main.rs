@@ -1,6 +1,5 @@
 mod code_highlight;
 mod debug_diagnostic;
-mod util;
 
 use std::path::Path;
 
