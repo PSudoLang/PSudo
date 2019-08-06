@@ -1,18 +1,20 @@
+mod cli_argument;
 mod code_highlight;
 mod debug_diagnostic;
 
-use std::path::Path;
-
+use cli_argument::*;
 use debug_diagnostic::debug_diagnostic;
+
 use libpsudoc::coretypes::{CompileSession, RichDebug, SourceFile};
 use libpsudoc::parse::{ParseContext, ParseFunction, ParseResult, Root};
 use libpsudoc::tokenize::Tokenizer;
 
-const PRINT_TOKENS: bool = false;
-const PRINT_NODES: bool = true;
-
 fn main() {
-    let source = SourceFile::create_real(Path::new("./test.psudo")).unwrap();
+    let options = PsudocCliArgument::from_args();
+
+    println!("{:?}", options);
+
+    let source = SourceFile::create_real(options.file).unwrap();
     let source_key = source.unique_key;
     let source_string = source.src.clone();
 
@@ -22,7 +24,7 @@ fn main() {
 
     compile_session.add_source_file(source);
 
-    if PRINT_TOKENS {
+    if options.print_tokens {
         for token in tokenized.iter() {
             println!(
                 "Token({:?}, span={}, {:?})",
@@ -51,12 +53,9 @@ fn main() {
 
     match parsed {
         ParseResult::Success(node) => {
-            if PRINT_NODES {
+            if options.print_nodes {
                 println!("{}", node.rich_debug(&compile_session));
             }
-        }
-        ParseResult::Skip => {
-            println!("Parse Skipped");
         }
         ParseResult::Fail(_) => {
             println!("Parse Failed");

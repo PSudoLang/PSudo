@@ -10,6 +10,7 @@ edition = "2018"
 libpsudoc = { path = "../libpsudoc" } 
 colored = "1.8.0"
 unicode-width = "0.1.5"
+structopt = "0.2.18"
 [dependencies.syntect]
 version = "3.2.0"
 features = ["parsing", "yaml-load"]
