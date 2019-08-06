@@ -1,5 +1,6 @@
 use super::*;
 use crate::coretypes::{Statement, TokenCategory};
+use crate::util::SemiDebug;
 
 pub struct Output;
 
@@ -21,16 +22,15 @@ impl ParseFunction for Output {
             return ParseResult::Fail(false);
         }
 
-        context.skip_whitespaces();
+        context.skip_whitespaces(false);
 
         let mut expressions = Vec::new();
         let mut to_print_linefeed = true;
         let mut is_failed = false;
         let mut expect_comma = false;
 
-        while context.has_next() {
-            let peeked = context.peek().expect("Guaranteed by while");
-            if peeked.category == TokenCategory::Separator {
+        while let Some(token) = context.peek().cloned() {
+            if token.category.can_be_separator() {
                 context.next();
                 break;
             }
@@ -39,46 +39,58 @@ impl ParseFunction for Output {
                 continue;
             }
             if !to_print_linefeed {
-                peeked
+                token
                     .span
                     .diagnostic_error(format!(
                         "Expected separator but {} received.",
-                        peeked.span.source_text(session)
+                        token.span.source_text(session).semi_debug()
                     ))
                     .emit_to(session);
                 return ParseResult::Fail(true);
             }
-            if peeked.span.source_text(session) == "\\" {
+            if token.span.source_text(session) == "\\" {
                 to_print_linefeed = false;
                 context.next();
                 continue;
             }
             if expect_comma {
-                if peeked.span.source_text(session) != "," {
-                    peeked.span.diagnostic_error(format!("Expected comma but {} received", peeked.span.source_text(session))).emit_to(session);
+                if token.category != TokenCategory::Punctuation
+                    || token.span.source_text(session) != ","
+                {
+                    token
+                        .span
+                        .diagnostic_error(format!(
+                            "Expected comma but {} received",
+                            token.span.source_text(session).semi_debug()
+                        ))
+                        .emit_to(session);
                     is_failed = true;
                 }
                 context.next();
                 expect_comma = false;
-                context.skip_whitespaces();
+                context.skip_whitespaces(false);
                 continue;
             }
-            let peeked_span = peeked.span.clone();
             let result = try_all(vec![Expression::try_parse], context, session);
             match result {
                 ParseResult::Success(expression) => {
                     expressions.push(expression);
                     expect_comma = true;
                 }
-                ParseResult::Skip => {}
-                ParseResult::Fail(_) => {
-                    peeked_span
-                        .diagnostic_error(format!("Expected expression but {} received", peeked_span.source_text(session)))
-                        .emit_to(session);
+                ParseResult::Fail(value) => {
+                    if !value {
+                        token
+                            .span
+                            .diagnostic_error(format!(
+                                "Expected expression but {} received",
+                                token.span.source_text(session).semi_debug()
+                            ))
+                            .emit_to(session);
+                    }
                     is_failed = true;
                 }
             }
-            context.skip_whitespaces();
+            context.skip_whitespaces(false);
         }
 
         if is_failed {

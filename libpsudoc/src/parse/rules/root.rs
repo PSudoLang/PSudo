@@ -14,12 +14,11 @@ impl ParseFunction for Root {
         let mut failed = false;
 
         while context.has_next() {
-            context.skip_whitespaces();
+            context.skip_whitespaces(true);
             match try_all(
                 vec![
                     LineComment::try_parse,
                     BlockComment::try_parse,
-                    Whitespace::try_parse,
                     NodeStatement::try_parse,
                 ],
                 context,
@@ -28,10 +27,10 @@ impl ParseFunction for Root {
                 ParseResult::Success(node) => {
                     nodes.push(node);
                 }
-                ParseResult::Skip => {}
                 ParseResult::Fail(val) => {
                     if !val {
-                        context.last_read_token()
+                        context
+                            .last_read_token()
                             .span
                             .diagnostic_error("Unexpected token")
                             .emit_to(session);

@@ -1,5 +1,6 @@
 use super::{Declaration, Expression};
-use crate::coretypes::{indented, CompileSession, RichDebug, Span, Spanned};
+use crate::coretypes::{CompileSession, RichDebug, Span, Spanned};
+use crate::util::indented;
 
 type ToPrintLinefeed = bool;
 

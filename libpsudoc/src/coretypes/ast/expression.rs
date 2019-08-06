@@ -1,8 +1,12 @@
 use super::Statement;
 use crate::coretypes::{CompileSession, RichDebug, Span, Spanned};
+use crate::util::indented;
 
 pub enum Expression {
     Literal(Literal),
+    Unit(Span),
+    Group(Span, Box<Expression>),
+    Tuple(Span, Vec<Expression>),
     Operator(OperatorExpression),
     Block(Span, Vec<Statement>, Box<Expression>),
     Member(MemberExpression),
@@ -14,6 +18,9 @@ impl Spanned for Expression {
     fn span(&self) -> Span {
         match self {
             Expression::Literal(literal) => literal.span(),
+            Expression::Tuple(span, ..) => span.clone(),
+            Expression::Unit(span) => span.clone(),
+            Expression::Group(span, ..) => span.clone(),
             Expression::Operator(expression) => expression.span(),
             Expression::FieldGet(span, ..) => span.clone(),
             Expression::Block(span, ..) => span.clone(),
@@ -26,6 +33,18 @@ impl Spanned for Expression {
 impl RichDebug for Expression {
     fn rich_debug(&self, session: &CompileSession) -> String {
         match self {
+            Expression::Unit(..) => "()".into(),
+            Expression::Group(_, expression) => expression.rich_debug(session),
+            Expression::Tuple(_, expressions) => format!(
+                "Tuple {{\n{}\n}}",
+                indented(
+                    expressions
+                        .iter()
+                        .map(|expression| expression.rich_debug(session))
+                        .collect::<Vec<_>>()
+                        .join("\n")
+                )
+            ),
             Expression::Literal(literal) => literal.rich_debug(session),
             _ => "Unknown Expression".into(),
         }

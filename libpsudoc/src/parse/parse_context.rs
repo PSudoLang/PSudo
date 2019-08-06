@@ -36,10 +36,10 @@ impl ParseContext {
         }
     }
 
-    pub fn skip_whitespaces(&mut self) -> bool {
+    pub fn skip_whitespaces(&mut self, skip_linefeeds: bool) -> bool {
         let mut skipped = false;
         while let Some(token) = self.peek() {
-            if token.category != TokenCategory::Whitespace {
+            if token.category != TokenCategory::Whitespace && (!skip_linefeeds || token.category != TokenCategory::LineWrap) {
                 break;
             }
             self.next();

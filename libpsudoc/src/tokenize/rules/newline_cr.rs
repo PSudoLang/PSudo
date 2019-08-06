@@ -10,7 +10,7 @@ impl Rule for RuleNewlineCr {
             CodeCharacterCategory::VerticalSpace if character.data == '\r' => {
                 TokenizerCommand::Continue(RuleCategory::NewlineCr, character.data == '\n')
             }
-            _ => TokenizerCommand::Emit(TokenCategory::Separator, false),
+            _ => TokenizerCommand::Emit(TokenCategory::LineWrap, false),
         }
     }
 }

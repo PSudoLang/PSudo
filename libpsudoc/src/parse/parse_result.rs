@@ -2,7 +2,6 @@ type TokenUsed = bool;
 
 pub enum ParseResult<T> {
     Success(T),
-    Skip,
     Fail(TokenUsed),
 }
 
@@ -13,7 +12,6 @@ impl<T> ParseResult<T> {
     {
         match self {
             ParseResult::Success(value) => ParseResult::Success(mapper(value)),
-            ParseResult::Skip => ParseResult::Skip,
             ParseResult::Fail(val) => ParseResult::Fail(val),
         }
     }

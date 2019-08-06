@@ -14,6 +14,7 @@ impl ParseFunction for Expression {
                 BooleanLiteral::try_parse,
                 StringLiteral::try_parse,
                 NumberLiteral::try_parse,
+                Group::try_parse,
             ],
             context,
             session,
