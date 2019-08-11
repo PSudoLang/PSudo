@@ -12,8 +12,6 @@ use libpsudoc::tokenize::Tokenizer;
 fn main() {
     let options = PsudocCliArgument::from_args();
 
-    println!("{:?}", options);
-
     let source = SourceFile::create_real(options.file).unwrap();
     let source_key = source.unique_key;
     let source_string = source.src.clone();
