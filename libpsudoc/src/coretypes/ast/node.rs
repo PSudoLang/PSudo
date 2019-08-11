@@ -22,10 +22,6 @@ impl Spanned for Node {
     }
 }
 
-pub struct Type {
-    pub name: String,
-}
-
 impl RichDebug for Node {
     fn rich_debug(&self, session: &CompileSession) -> String {
         match self {

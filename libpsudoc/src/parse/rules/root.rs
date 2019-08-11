@@ -12,9 +12,9 @@ impl ParseFunction for Root {
         let mut nodes = Vec::new();
 
         let mut failed = false;
+        context.skip_whitespaces(true);
 
         while context.has_next() {
-            context.skip_whitespaces(true);
             match try_all(
                 vec![
                     LineComment::try_parse,
@@ -40,6 +40,7 @@ impl ParseFunction for Root {
                     failed = true;
                 }
             }
+            context.skip_whitespaces(true);
         }
 
         if failed {

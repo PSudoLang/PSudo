@@ -1,4 +1,3 @@
-use super::Statement;
 use crate::coretypes::{CompileSession, RichDebug, Span, Spanned};
 use crate::util::indented;
 
@@ -6,9 +5,9 @@ pub enum Expression {
     Literal(Literal),
     Unit(Span),
     Group(Span, Box<Expression>),
+    Array(Span, Vec<Expression>),
     Tuple(Span, Vec<Expression>),
     Operator(OperatorExpression),
-    Block(Span, Vec<Statement>, Box<Expression>),
     Member(MemberExpression),
     FieldGet(Span, Box<Expression>, String),
     ControlFlow(ControlFlowExpression),
@@ -23,9 +22,9 @@ impl Spanned for Expression {
             Expression::Group(span, ..) => span.clone(),
             Expression::Operator(expression) => expression.span(),
             Expression::FieldGet(span, ..) => span.clone(),
-            Expression::Block(span, ..) => span.clone(),
             Expression::Member(expression) => expression.span(),
             Expression::ControlFlow(expression) => expression.span(),
+            Expression::Array(span, ..) => span.clone(),
         }
     }
 }
@@ -46,6 +45,16 @@ impl RichDebug for Expression {
                 )
             ),
             Expression::Literal(literal) => literal.rich_debug(session),
+            Expression::Array(_, expressions) => format!(
+                "Array {{\n{}\n}}",
+                indented(
+                    expressions
+                        .iter()
+                        .map(|expression| expression.rich_debug(session))
+                        .collect::<Vec<_>>()
+                        .join("\n")
+                )
+            ),
             _ => "Unknown Expression".into(),
         }
     }
@@ -103,7 +112,7 @@ pub enum Literal {
 }
 
 impl RichDebug for Literal {
-    fn rich_debug(&self, session: &CompileSession) -> String {
+    fn rich_debug(&self, _: &CompileSession) -> String {
         match self {
             Literal::Boolean(.., val) => format!("{:?}", val),
             Literal::String(.., val) => format!("{:?}", val),

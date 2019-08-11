@@ -4,9 +4,9 @@ use crate::util::SemiDebug;
 
 use crate::coretypes::Expression as ExpressionNode;
 
-pub struct Group;
+pub struct Array;
 
-impl ParseFunction for Group {
+impl ParseFunction for Array {
     type Output = ExpressionNode;
 
     fn try_parse(
@@ -14,7 +14,7 @@ impl ParseFunction for Group {
         session: &mut CompileSession,
     ) -> ParseResult<Self::Output> {
         let left_parenthesis = if let Some(token) = context.next_if_matched(|token| {
-            token.category == TokenCategory::GroupOpen && token.span.source_text(session) == "("
+            token.category == TokenCategory::GroupOpen && token.span.source_text(session) == "["
         }) {
             token.clone()
         } else {
@@ -27,7 +27,7 @@ impl ParseFunction for Group {
         context.skip_whitespaces(true);
 
         while let Some(token) = context.peek().cloned() {
-            if token.category == TokenCategory::GroupClose && token.span.source_text(session) == ")"
+            if token.category == TokenCategory::GroupClose && token.span.source_text(session) == "]"
             {
                 context.next();
                 break;
@@ -84,10 +84,6 @@ impl ParseFunction for Group {
             .joined(&context.last_read_token().span)
             .expect("In the same file");
 
-        ParseResult::Success(match expressions.len() {
-            0 => ExpressionNode::Unit(span),
-            1 if expect_comma => ExpressionNode::Group(span, Box::new(expressions.remove(0))),
-            _ => ExpressionNode::Tuple(span, expressions),
-        })
+        ParseResult::Success(ExpressionNode::Array(span, expressions))
     }
 }

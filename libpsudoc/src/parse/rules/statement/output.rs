@@ -101,7 +101,7 @@ impl ParseFunction for Output {
             output_keyword
                 .span
                 .clone()
-                .joined(context.last_read_token().span.clone())
+                .joined(&context.last_read_token().span)
                 .expect("In the same file"),
             expressions,
             to_print_linefeed,

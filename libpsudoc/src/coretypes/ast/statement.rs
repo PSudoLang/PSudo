@@ -1,4 +1,4 @@
-use super::{Declaration, Expression};
+use super::{Block, Declaration, Expression};
 use crate::coretypes::{CompileSession, RichDebug, Span, Spanned};
 use crate::util::indented;
 
@@ -11,6 +11,7 @@ pub enum Statement {
     Input(Span),
     Output(Span, Vec<Expression>, ToPrintLinefeed),
     Declaration(Declaration),
+    Block(Block),
 }
 
 impl Spanned for Statement {
@@ -22,6 +23,7 @@ impl Spanned for Statement {
             Statement::Input(span, ..) => span.clone(),
             Statement::Output(span, ..) => span.clone(),
             Statement::Declaration(declaration) => declaration.span(),
+            Statement::Block(block) => block.span(),
         }
     }
 }
@@ -44,6 +46,10 @@ impl RichDebug for Statement {
                         .join("\n")
                 )
             ),
+            Statement::Expression(expression) => {
+                format!("Statement :: {}", expression.rich_debug(session))
+            }
+            Statement::Declaration(declaration) => declaration.rich_debug(session),
             _ => "Unknown Statement".into(),
         }
     }

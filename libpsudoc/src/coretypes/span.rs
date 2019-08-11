@@ -58,7 +58,7 @@ impl Span {
             .unwrap_or(LineColumn::Invalid)
     }
 
-    pub fn joined(&self, other: Span) -> Option<Span> {
+    pub fn joined(&self, other: &Span) -> Option<Span> {
         if self.length() > 0 && other.length() > 0 && self.source_file != other.source_file {
             return None;
         }
@@ -151,7 +151,7 @@ where
         if self.is_empty() {
             None
         } else {
-            self[0].span().joined(self[self.len() - 1].span())
+            self[0].span().joined(&self[self.len() - 1].span())
         }
         .unwrap_or(Span::FIRST_COLUMN)
     }

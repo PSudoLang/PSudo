@@ -35,11 +35,28 @@ impl ParseContext {
             None
         }
     }
+    pub fn next_if_matched<F>(&mut self, predicate: F) -> Option<&Token>
+    where
+        F: Fn(&Token) -> bool,
+    {
+        let next = self.next();
+        if let Some(token) = &next {
+            if predicate(token) {
+                next
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
 
     pub fn skip_whitespaces(&mut self, skip_linefeeds: bool) -> bool {
         let mut skipped = false;
         while let Some(token) = self.peek() {
-            if token.category != TokenCategory::Whitespace && (!skip_linefeeds || token.category != TokenCategory::LineWrap) {
+            if token.category != TokenCategory::Whitespace
+                && (!skip_linefeeds || token.category != TokenCategory::LineWrap)
+            {
                 break;
             }
             self.next();
