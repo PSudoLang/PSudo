@@ -9,7 +9,7 @@ edition = "2018"
 [dependencies]
 libpsudoc = { path = "../libpsudoc" } 
 colored = "1.8.0"
-unicode-width = "0.1.5"
+unicode-width = "0.1.6"
 structopt = "0.2.18"
 [dependencies.syntect]
 version = "3.2.1"
