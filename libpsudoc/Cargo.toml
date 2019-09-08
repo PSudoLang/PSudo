@@ -9,4 +9,4 @@ edition = "2018"
 [dependencies]
 llvm-sys = "80.1.1"
 num-traits = "0.2.8"
-num-bigint = "0.2.2"
+num-bigint = "0.2.3"
