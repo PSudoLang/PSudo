@@ -16,7 +16,7 @@ impl ParseFunction for Root {
 
         while context.has_next() {
             match try_all(
-                vec![
+                &[
                     LineComment::try_parse,
                     BlockComment::try_parse,
                     NodeStatement::try_parse,

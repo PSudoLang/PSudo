@@ -15,7 +15,7 @@ impl Rule for RuleQuotedString {
                 TokenizerCommand::Emit(TokenCategory::LiteralString, true)
             }
             CodeCharacterCategory::EOF => {
-                TokenizerCommand::Emit(TokenCategory::NotEndedLiteralString, false)
+                TokenizerCommand::Emit(TokenCategory::LiteralStringNotEnded, false)
             }
             _ => TokenizerCommand::Continue(RuleCategory::QuotedString, true),
         }

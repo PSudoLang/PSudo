@@ -10,7 +10,7 @@ impl ParseFunction for Statement {
         session: &mut CompileSession,
     ) -> ParseResult<Self::Output> {
         try_all(
-            vec![
+            &[
                 Output::try_parse,
                 ExpressionStatement::try_parse,
                 DeclarationStatement::try_parse,

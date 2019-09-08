@@ -54,9 +54,7 @@ impl ParseFunction for Output {
                 continue;
             }
             if expect_comma {
-                if token.category != TokenCategory::Punctuation
-                    || token.span.source_text(session) != ","
-                {
+                if token.category != TokenCategory::PunctuationComma {
                     token
                         .span
                         .diagnostic_error(format!(
@@ -71,7 +69,7 @@ impl ParseFunction for Output {
                 context.skip_whitespaces(false);
                 continue;
             }
-            let result = try_all(vec![Expression::try_parse], context, session);
+            let result = Expression::try_parse(context, session);
             match result {
                 ParseResult::Success(expression) => {
                     expressions.push(expression);

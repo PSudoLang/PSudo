@@ -12,9 +12,11 @@ impl ParseFunction for Type {
     ) -> ParseResult<Self::Output> {
         // TODO: Support of path like std::HashMap?
         // TODO: Unit and never type
-        let type_name = if let Some(token) = context.next_if_matched(|token| token.category == TokenCategory::Identifier) {
+        let type_name = if let Some(token) =
+            context.next_if_matched(|token| token.category == TokenCategory::IdentifierIdentifier)
+        {
             token.clone()
-        } else { 
+        } else {
             return ParseResult::Fail(false);
         };
 
@@ -25,8 +27,8 @@ impl ParseFunction for Type {
             name: match name.as_str() {
                 "!" => TypeName::Never,
                 "()" => TypeName::Unit,
-                _ => TypeName::Path(name)
-            }
+                _ => TypeName::Path(name),
+            },
         })
     }
 }

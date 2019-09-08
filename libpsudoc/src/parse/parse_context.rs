@@ -3,11 +3,31 @@ use crate::coretypes::{Token, TokenCategory};
 pub struct ParseContext {
     tokens: Vec<Token>,
     pub current: usize,
+    /// Current operator precedence
+    ///
+    /// | level              | for                              |
+    /// | ------------------ | -------------------------------- |
+    /// | 1                  | `*`, `/`, `%`                    |
+    /// | 2                  | `+`, `-`                         |
+    /// | 3                  | `<<`, `>>`                       |
+    /// | 4                  | `&`                              |
+    /// | 5                  | `^`                              |
+    /// | 6                  | `|`                              |
+    /// | 7                  | `==`, `!=`, `<`, `>`, `<=`, `>=` |
+    /// | 8                  | `&&`                             |
+    /// | 9                  | `||`                             |
+    /// | 10                 | `..`, `..<`                      |
+    /// | usize::max_value() | no-operators                     |
+    pub operator_precedence: usize,
 }
 
 impl ParseContext {
     pub fn new(tokens: Vec<Token>) -> ParseContext {
-        ParseContext { tokens, current: 0 }
+        ParseContext {
+            tokens,
+            current: 0,
+            operator_precedence: usize::max_value(),
+        }
     }
 
     pub fn has_next(&self) -> bool {
@@ -35,6 +55,11 @@ impl ParseContext {
             None
         }
     }
+
+    pub fn next_token_categoried(&mut self, categories: &[TokenCategory]) -> Option<&Token> {
+        self.next_if_matched(|token| categories.contains(&token.category))
+    }
+
     pub fn next_if_matched<F>(&mut self, predicate: F) -> Option<&Token>
     where
         F: Fn(&Token) -> bool,
@@ -55,7 +80,7 @@ impl ParseContext {
         let mut skipped = false;
         while let Some(token) = self.peek() {
             if token.category != TokenCategory::Whitespace
-                && (!skip_linefeeds || token.category != TokenCategory::LineWrap)
+                && (!skip_linefeeds || token.category != TokenCategory::SeparatorLineWrap)
             {
                 break;
             }
@@ -74,6 +99,7 @@ impl ParseContext {
                 .skip(self.current)
                 .collect::<Vec<_>>(),
             current: 0,
+            operator_precedence: self.operator_precedence,
         }
     }
 }

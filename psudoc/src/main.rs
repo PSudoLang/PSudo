@@ -57,22 +57,25 @@ fn main() {
         }
         ParseResult::Fail(_) => {
             println!("Parse Failed");
+            std::process::exit(1);
         }
     }
 
-    let (syntax_reference, syntax_set, theme) = code_highlight::initialize();
-    let highlighted_lines =
-        code_highlight::highlight(&syntax_reference, &syntax_set, &theme, &source_string);
+    if options.print_codes {
+        let (syntax_reference, syntax_set, theme) = code_highlight::initialize();
+        let highlighted_lines =
+            code_highlight::highlight(&syntax_reference, &syntax_set, &theme, &source_string);
 
-    println!();
+        println!();
 
-    for highlighted_line in highlighted_lines {
-        print!(
-            "{}",
-            code_highlight::render_style(&[highlighted_line], false)
-        );
+        for highlighted_line in highlighted_lines {
+            print!(
+                "{}",
+                code_highlight::render_style(&[highlighted_line], false)
+            );
+        }
+
+        println!();
+        println!();
     }
-
-    println!();
-    println!();
 }

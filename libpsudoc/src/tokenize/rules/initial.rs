@@ -14,7 +14,7 @@ impl Rule for RuleInitial {
                 if character.data == '\r' {
                     TokenizerCommand::Continue(RuleCategory::NewlineCr, true)
                 } else {
-                    TokenizerCommand::Emit(TokenCategory::LineWrap, true)
+                    TokenizerCommand::Emit(TokenCategory::SeparatorLineWrap, true)
                 }
             }
             CodeCharacterCategory::Punctuation => {
@@ -30,12 +30,6 @@ impl Rule for RuleInitial {
                 TokenizerCommand::Continue(RuleCategory::Number, true)
             }
             CodeCharacterCategory::EOF => TokenizerCommand::Ignore(true),
-            CodeCharacterCategory::GroupOpeningCharacter => {
-                TokenizerCommand::Emit(TokenCategory::GroupOpen, true)
-            }
-            CodeCharacterCategory::GroupClosingCharacter => {
-                TokenizerCommand::Emit(TokenCategory::GroupClose, true)
-            }
         }
     }
 }

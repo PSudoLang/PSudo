@@ -9,12 +9,6 @@ impl ParseFunction for Declaration {
         context: &mut ParseContext,
         session: &mut CompileSession,
     ) -> ParseResult<Self::Output> {
-        try_all(
-            vec![
-                Function::try_parse,
-            ],
-            context,
-            session,
-        )
+        try_all(&[Function::try_parse], context, session)
     }
 }

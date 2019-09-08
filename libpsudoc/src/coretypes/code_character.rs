@@ -6,8 +6,6 @@ pub enum CodeCharacterCategory {
     TogglingQuote,
     DecimalDigit,
     Punctuation,
-    GroupOpeningCharacter,
-    GroupClosingCharacter,
     EOF,
 }
 
@@ -58,14 +56,6 @@ impl CodeCharacter {
             | '\u{2028}' // LINE SEPARATOR
             | '\u{2029}' // PARAGRAPH SEPARATOR 
                 => CodeCharacterCategory::VerticalSpace,
-            | '('        // LEFT PARENTHESIS
-            | '['        // LEFT SQUARE BRACKET
-            | '{'        // LEFT CURLY BRACKET
-                => CodeCharacterCategory::GroupOpeningCharacter,
-            | ')' // RIGHT PARENTHESIS
-            | ']' // RIGHT SQUARE BRACKET
-            | '}' // RIGHT CURLY BRACKET
-                => CodeCharacterCategory::GroupClosingCharacter,
             | '"'  // QUOTATION MARK
             | '\'' // APOSTROPHE
             | '`'  // GRAVE ACCENT
@@ -92,6 +82,12 @@ impl CodeCharacter {
             | '^'  // CIRCUMFLEX ACCENT
             | '|'  // VERTICAL LINE
             | '~'  // TILDE
+            | '('  // LEFT PARENTHESIS
+            | '['  // LEFT SQUARE BRACKET
+            | '{'  // LEFT CURLY BRACKET
+            | ')'  // RIGHT PARENTHESIS
+            | ']'  // RIGHT SQUARE BRACKET
+            | '}'  // RIGHT CURLY BRACKET
                 => CodeCharacterCategory::Punctuation,
             _ => CodeCharacterCategory::Identifiable,
         };

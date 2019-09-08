@@ -1,11 +1,11 @@
 mod declaration;
 mod expression;
+mod fragment;
 mod node;
 mod statement;
-mod fragment;
 
 pub use declaration::*;
 pub use expression::*;
+pub use fragment::*;
 pub use node::*;
 pub use statement::*;
-pub use fragment::*;

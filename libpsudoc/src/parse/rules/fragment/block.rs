@@ -1,6 +1,6 @@
 use super::*;
+use crate::coretypes::{Block as BlockNode, TokenCategory};
 use crate::util::SemiDebug;
-use crate::coretypes::{TokenCategory, Block as BlockNode};
 
 pub struct Block;
 
@@ -11,9 +11,9 @@ impl ParseFunction for Block {
         context: &mut ParseContext,
         session: &mut CompileSession,
     ) -> ParseResult<Self::Output> {
-        let left_parenthesis = if let Some(token) = context.next_if_matched(|token| {
-            token.category == TokenCategory::GroupOpen && token.span.source_text(session) == "{"
-        }) {
+        let left_parenthesis = if let Some(token) = context
+            .next_if_matched(|token| token.category == TokenCategory::PunctuationLeftCurlyBracket)
+        {
             token.clone()
         } else {
             return ParseResult::Fail(false);
@@ -24,8 +24,7 @@ impl ParseFunction for Block {
         context.skip_whitespaces(true);
 
         while let Some(token) = context.peek().cloned() {
-            if token.category == TokenCategory::GroupClose && token.span.source_text(session) == "}"
-            {
+            if token.category == TokenCategory::PunctuationRightCurlyBracket {
                 context.next();
                 break;
             }

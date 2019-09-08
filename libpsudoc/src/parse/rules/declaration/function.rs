@@ -24,7 +24,7 @@ impl ParseFunction for Function {
         context.skip_whitespaces(false);
 
         let function_name = if let Some(token) = context.next() {
-            if token.category == TokenCategory::Identifier {
+            if token.category == TokenCategory::IdentifierIdentifier {
                 token.span.source_text(session)
             } else {
                 token
@@ -47,8 +47,7 @@ impl ParseFunction for Function {
         context.skip_whitespaces(false);
 
         if let Some(token) = context.next() {
-            if token.category != TokenCategory::GroupOpen || token.span.source_text(session) != "("
-            {
+            if token.category != TokenCategory::PunctuationLeftParenthesis {
                 token
                     .span
                     .diagnostic_error(format!(
@@ -73,8 +72,7 @@ impl ParseFunction for Function {
         context.skip_whitespaces(true);
 
         while let Some(token) = context.peek().cloned() {
-            if token.category == TokenCategory::GroupClose && token.span.source_text(session) == ")"
-            {
+            if token.category == TokenCategory::PunctuationRightParenthesis {
                 context.next();
                 break;
             }
@@ -83,9 +81,7 @@ impl ParseFunction for Function {
                 continue;
             }
             if expect_comma {
-                if token.category != TokenCategory::Punctuation
-                    || token.span.source_text(session) != ","
-                {
+                if token.category != TokenCategory::PunctuationComma {
                     token
                         .span
                         .diagnostic_error(format!(
@@ -102,7 +98,7 @@ impl ParseFunction for Function {
             }
 
             let variable_name = if let Some(token) = context.next() {
-                if token.category == TokenCategory::Identifier {
+                if token.category == TokenCategory::IdentifierIdentifier {
                     token.clone()
                 } else {
                     token
@@ -148,9 +144,7 @@ impl ParseFunction for Function {
         context.skip_whitespaces(true);
 
         let return_type = if let Some(token) = context.peek().cloned() {
-            if token.category == TokenCategory::Punctuation
-                && token.span.source_text(session) == ":"
-            {
+            if token.category == TokenCategory::PunctuationColon {
                 match TypeAnnotation::try_parse(context, session) {
                     ParseResult::Success(type_annotation) => Some(type_annotation.1),
                     ParseResult::Fail(_) => {
@@ -178,8 +172,7 @@ impl ParseFunction for Function {
 
         context.skip_whitespaces(true);
         let block_body = if let Some(token) = context.peek().cloned() {
-            if token.category == TokenCategory::GroupOpen && token.span.source_text(session) == "{"
-            {
+            if token.category == TokenCategory::PunctuationLeftCurlyBracket {
                 match Block::try_parse(context, session) {
                     ParseResult::Success(block) => block,
                     ParseResult::Fail(val) => {

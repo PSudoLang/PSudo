@@ -15,6 +15,16 @@ impl<T> ParseResult<T> {
             ParseResult::Fail(val) => ParseResult::Fail(val),
         }
     }
+    pub fn flat_map<F, R>(self, mapper: F) -> ParseResult<R>
+    where
+        F: FnOnce(T) -> ParseResult<R>,
+    {
+        match self {
+            ParseResult::Success(value) => mapper(value),
+            ParseResult::Fail(val) => ParseResult::Fail(val),
+        }
+    }
+
     pub fn or<F>(self, or_function: F) -> ParseResult<T>
     where
         F: FnOnce() -> ParseResult<T>,

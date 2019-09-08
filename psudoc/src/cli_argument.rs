@@ -14,4 +14,7 @@ pub struct PsudocCliArgument {
     #[structopt(long = "print-nodes")]
     /// Debug Only: Whether to print nodes or not.
     pub print_nodes: bool,
+    #[structopt(long = "print-codes")]
+    /// Debug Only: Whether to print codes with highlight or not.
+    pub print_codes: bool,
 }

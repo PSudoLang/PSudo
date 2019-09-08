@@ -13,9 +13,9 @@ impl ParseFunction for Group {
         context: &mut ParseContext,
         session: &mut CompileSession,
     ) -> ParseResult<Self::Output> {
-        let left_parenthesis = if let Some(token) = context.next_if_matched(|token| {
-            token.category == TokenCategory::GroupOpen && token.span.source_text(session) == "("
-        }) {
+        let left_parenthesis = if let Some(token) = context
+            .next_if_matched(|token| token.category == TokenCategory::PunctuationLeftParenthesis)
+        {
             token.clone()
         } else {
             return ParseResult::Fail(false);
@@ -27,8 +27,7 @@ impl ParseFunction for Group {
         context.skip_whitespaces(true);
 
         while let Some(token) = context.peek().cloned() {
-            if token.category == TokenCategory::GroupClose && token.span.source_text(session) == ")"
-            {
+            if token.category == TokenCategory::PunctuationRightParenthesis {
                 context.next();
                 break;
             }
@@ -37,9 +36,7 @@ impl ParseFunction for Group {
                 continue;
             }
             if expect_comma {
-                if token.category != TokenCategory::Punctuation
-                    || token.span.source_text(session) != ","
-                {
+                if token.category != TokenCategory::PunctuationComma {
                     token
                         .span
                         .diagnostic_error(format!(
@@ -55,9 +52,7 @@ impl ParseFunction for Group {
                 continue;
             }
 
-            let result = try_all(vec![Expression::try_parse], context, session);
-
-            match result {
+            match Expression::try_parse(context, session) {
                 ParseResult::Success(expression) => {
                     expressions.push(expression);
                     expect_comma = true;

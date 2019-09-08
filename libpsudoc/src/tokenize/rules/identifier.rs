@@ -15,20 +15,23 @@ pub struct RuleIdentifier;
 impl Rule for RuleIdentifier {
     fn process(character: &CodeCharacter, characters: &[CodeCharacter]) -> TokenizerCommand {
         match character.category {
-            CodeCharacterCategory::Identifiable | CodeCharacterCategory::DecimalDigit => {
+            CodeCharacterCategory::Identifiable => {
+                TokenizerCommand::Continue(RuleCategory::Identifier, true)
+            }
+            CodeCharacterCategory::DecimalDigit => {
                 TokenizerCommand::Continue(RuleCategory::Identifier, true)
             }
             _ => {
                 let code_string = characters.iter().map(|it| it.data).collect::<String>();
                 TokenizerCommand::Emit(
                     if characters.len() == 1 && characters[0].data == '_' {
-                        TokenCategory::PlaceholderName
+                        TokenCategory::IdentifierPlaceholderName
                     } else if KEYWORDS.contains(&code_string.as_str()) {
                         TokenCategory::Keyword
                     } else if BOOL.contains(&code_string.as_str()) {
                         TokenCategory::LiteralBoolean
                     } else {
-                        TokenCategory::Identifier
+                        TokenCategory::IdentifierIdentifier
                     },
                     false,
                 )

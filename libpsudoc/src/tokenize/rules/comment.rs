@@ -8,7 +8,7 @@ impl Rule for RuleLineComment {
     fn process(character: &CodeCharacter, _: &[CodeCharacter]) -> TokenizerCommand {
         match character.category {
             CodeCharacterCategory::VerticalSpace | CodeCharacterCategory::EOF => {
-                TokenizerCommand::Emit(TokenCategory::LineComment, false)
+                TokenizerCommand::Emit(TokenCategory::CommentLine, false)
             }
             _ => TokenizerCommand::Continue(RuleCategory::LineComment, true),
         }
@@ -23,10 +23,10 @@ impl Rule for RuleBlockComment {
             CodeCharacterCategory::Punctuation
                 if character.data == '/' && characters[characters.len() - 1].data == '*' =>
             {
-                TokenizerCommand::Emit(TokenCategory::BlockComment, true)
+                TokenizerCommand::Emit(TokenCategory::CommentBlock, true)
             }
             CodeCharacterCategory::EOF => {
-                TokenizerCommand::Emit(TokenCategory::NotEndedBlockComment, false)
+                TokenizerCommand::Emit(TokenCategory::CommentBlockNotEnded, false)
             }
             _ => TokenizerCommand::Continue(RuleCategory::BlockComment, true),
         }

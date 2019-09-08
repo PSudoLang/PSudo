@@ -1,7 +1,7 @@
 use super::*;
 
 pub fn try_all<T>(
-    parse_functions: Vec<fn(&mut ParseContext, &mut CompileSession) -> ParseResult<T>>,
+    parse_functions: &[fn(&mut ParseContext, &mut CompileSession) -> ParseResult<T>],
     context: &mut ParseContext,
     session: &mut CompileSession,
 ) -> ParseResult<T> {
@@ -16,6 +16,7 @@ pub fn try_all<T>(
             ParseResult::Fail(false) => {}
             _ => {
                 context.current += sandbox.current;
+                context.operator_precedence = sandbox.operator_precedence;
                 return result;
             }
         }

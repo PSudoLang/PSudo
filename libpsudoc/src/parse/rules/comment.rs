@@ -7,7 +7,7 @@ impl ParseFunction for LineComment {
     type Output = Node;
     fn try_parse(context: &mut ParseContext, _: &mut CompileSession) -> ParseResult<Self::Output> {
         if let Some(token) = context.next() {
-            if token.category == TokenCategory::LineComment {
+            if token.category == TokenCategory::CommentLine {
                 return ParseResult::Success(Node::Comment(token.span.clone(), false));
             }
         }
@@ -21,7 +21,7 @@ impl ParseFunction for BlockComment {
     type Output = Node;
     fn try_parse(context: &mut ParseContext, _: &mut CompileSession) -> ParseResult<Self::Output> {
         if let Some(token) = context.next() {
-            if token.category == TokenCategory::BlockComment {
+            if token.category == TokenCategory::CommentBlock {
                 return ParseResult::Success(Node::Comment(token.span.clone(), true));
             }
         }
