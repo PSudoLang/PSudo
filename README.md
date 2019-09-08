@@ -7,6 +7,9 @@ This is the main source code repository for PSudo. It contains the compiler, sta
 - libpsudoc - The compiler library of PSudo
 - psudoc - The compiler of PSudo
 - stdlib - The standard libraries
+
+## Not Contains But Todos
+
 - psudoman - The static stdlib manual generator for PSudo
 - psudols - PSudo Language Server
 - psudofmt - PSudo Code Formatter & Linter
