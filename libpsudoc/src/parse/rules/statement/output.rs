@@ -1,6 +1,5 @@
 use super::*;
 use crate::coretypes::{Statement, TokenCategory};
-use crate::util::SemiDebug;
 
 pub struct Output;
 
@@ -43,7 +42,7 @@ impl ParseFunction for Output {
                     .span
                     .diagnostic_error(format!(
                         "Expected separator but {} received.",
-                        token.span.source_text(session).semi_debug()
+                        token.span.source_text(session).escape_debug()
                     ))
                     .emit_to(session);
                 return ParseResult::Fail(true);
@@ -59,7 +58,7 @@ impl ParseFunction for Output {
                         .span
                         .diagnostic_error(format!(
                             "Expected comma but {} received",
-                            token.span.source_text(session).semi_debug()
+                            token.span.source_text(session).escape_debug()
                         ))
                         .emit_to(session);
                     is_failed = true;
@@ -80,8 +79,8 @@ impl ParseFunction for Output {
                         token
                             .span
                             .diagnostic_error(format!(
-                                "Expected expression but {} received",
-                                token.span.source_text(session).semi_debug()
+                                "Expected expression in output, but {} received",
+                                token.span.source_text(session).escape_debug()
                             ))
                             .emit_to(session);
                     }

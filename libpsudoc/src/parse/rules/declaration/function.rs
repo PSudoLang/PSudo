@@ -1,6 +1,5 @@
 use super::*;
 use crate::coretypes::{TokenCategory, Type, TypeName};
-use crate::util::SemiDebug;
 
 use crate::coretypes::Declaration;
 
@@ -31,7 +30,7 @@ impl ParseFunction for Function {
                     .span
                     .diagnostic_error(format!(
                         "Expected identifier after fn keyword but {} recevied.",
-                        token.span.source_text(session).semi_debug()
+                        token.span.source_text(session).escape_debug()
                     ))
                     .emit_to(session);
                 return ParseResult::Fail(true);
@@ -52,7 +51,7 @@ impl ParseFunction for Function {
                     .span
                     .diagnostic_error(format!(
                         "Expected ( after identifier but {} recevied.",
-                        token.span.source_text(session).semi_debug()
+                        token.span.source_text(session).escape_debug()
                     ))
                     .emit_to(session);
                 return ParseResult::Fail(true);
@@ -86,7 +85,7 @@ impl ParseFunction for Function {
                         .span
                         .diagnostic_error(format!(
                             "Expected , but {} received",
-                            token.span.source_text(session).semi_debug()
+                            token.span.source_text(session).escape_debug()
                         ))
                         .emit_to(session);
                     return ParseResult::Fail(true);
@@ -105,7 +104,7 @@ impl ParseFunction for Function {
                         .span
                         .diagnostic_error(format!(
                             "Expected identifier but {} recevied.",
-                            token.span.source_text(session).semi_debug()
+                            token.span.source_text(session).escape_debug()
                         ))
                         .emit_to(session);
                     is_failed = true;
@@ -133,7 +132,7 @@ impl ParseFunction for Function {
                         .span
                         .diagnostic_error(format!(
                             "Expected type annotation but {} received",
-                            token.span.source_text(session).semi_debug()
+                            token.span.source_text(session).escape_debug()
                         ))
                         .emit_to(session);
                     is_failed = true;
@@ -152,7 +151,7 @@ impl ParseFunction for Function {
                             .span
                             .diagnostic_error(format!(
                                 "Expected type annotation but {} received",
-                                token.span.source_text(session).semi_debug()
+                                token.span.source_text(session).escape_debug()
                             ))
                             .emit_to(session);
                         is_failed = true;
@@ -181,7 +180,7 @@ impl ParseFunction for Function {
                                 .span
                                 .diagnostic_error(format!(
                                     "Expected block body but {} received",
-                                    token.span.source_text(session).semi_debug()
+                                    token.span.source_text(session).escape_debug()
                                 ))
                                 .emit_to(session);
                         }
@@ -193,7 +192,7 @@ impl ParseFunction for Function {
                     .span
                     .diagnostic_error(format!(
                         "Expected block body but {} received",
-                        token.span.source_text(session).semi_debug()
+                        token.span.source_text(session).escape_debug()
                     ))
                     .emit_to(session);
                 return ParseResult::Fail(true);

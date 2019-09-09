@@ -1,6 +1,5 @@
 use super::*;
 use crate::coretypes::TokenCategory;
-use crate::util::SemiDebug;
 
 use crate::coretypes::Expression as ExpressionNode;
 
@@ -41,7 +40,7 @@ impl ParseFunction for Array {
                         .span
                         .diagnostic_error(format!(
                             "Expected , but {} received",
-                            token.span.source_text(session).semi_debug()
+                            token.span.source_text(session).escape_debug()
                         ))
                         .emit_to(session);
                     return ParseResult::Fail(true);
@@ -61,8 +60,8 @@ impl ParseFunction for Array {
                     token
                         .span
                         .diagnostic_error(format!(
-                            "Expected expression but {} received",
-                            token.span.source_text(session).semi_debug()
+                            "Expected expression in array, but {} received",
+                            token.span.source_text(session).escape_debug()
                         ))
                         .emit_to(session);
                     is_failed = true;

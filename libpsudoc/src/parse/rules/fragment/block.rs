@@ -1,6 +1,5 @@
 use super::*;
 use crate::coretypes::{Block as BlockNode, TokenCategory};
-use crate::util::SemiDebug;
 
 pub struct Block;
 
@@ -45,8 +44,8 @@ impl ParseFunction for Block {
                     token
                         .span
                         .diagnostic_error(format!(
-                            "Expected expression but {} received",
-                            token.span.source_text(session).semi_debug()
+                            "Expected statement in block, but {} received",
+                            token.span.source_text(session).escape_debug()
                         ))
                         .emit_to(session);
                     is_failed = true;
