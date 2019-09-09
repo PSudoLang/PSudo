@@ -26,7 +26,8 @@ impl ParseFunction for Expression {
         while mutated {
             mutated = false;
             result = result.flat_map(|lhs| {
-                let hmm: &[Option<fn(&mut _, &mut _) -> _>] = &[
+                let parse_functions: &[Option<fn(&mut _, &mut _) -> _>] = &[
+                    Some(Index::try_parse),
                     if context.operator_precedence > 2 {
                         Some(BinaryOperator2::try_parse)
                     } else {
@@ -39,7 +40,8 @@ impl ParseFunction for Expression {
                     },
                 ];
                 match try_all(
-                    &hmm.iter()
+                    &parse_functions
+                        .iter()
                         .filter(|it| it.is_some())
                         .map(|it| it.unwrap())
                         .collect::<Box<[_]>>(),

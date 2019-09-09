@@ -6,6 +6,7 @@ mod group_tuple;
 mod literal;
 mod root;
 mod unary_operator;
+mod index;
 
 pub use array::*;
 pub use binary_operator::*;
@@ -13,3 +14,4 @@ pub use group_tuple::*;
 pub use literal::*;
 pub use root::*;
 pub use unary_operator::*;
+pub use index::*;
