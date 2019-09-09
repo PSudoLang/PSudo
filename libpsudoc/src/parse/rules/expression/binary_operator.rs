@@ -41,7 +41,10 @@ macro_rules! binary_operator {
                             Box::new(rhs),
                         ))
                     }))},
-                    ParseResult::Fail(_) => ParseResult::Fail(true),
+                    ParseResult::Fail(_) => {
+                        context.operator_precedence = precedence_back;
+                        ParseResult::Fail(true)
+                    },
                 }
             }
         }
@@ -93,7 +96,6 @@ binary_operator!(BinaryOperator8, 8, {
 binary_operator!(BinaryOperator9, 9, {
     TokenCategory::PunctuationsLogicalOr => BinaryOperatorKind::LogicalOr,
 });
-
 
 binary_operator!(BinaryOperator10, 10, {
     TokenCategory::PunctuationsRangeExclusive => BinaryOperatorKind::RangeExclusive,
