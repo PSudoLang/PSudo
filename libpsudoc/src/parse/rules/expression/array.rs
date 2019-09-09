@@ -13,7 +13,7 @@ impl ParseFunction for Array {
         session: &mut CompileSession,
     ) -> ParseResult<Self::Output> {
         let left_parenthesis = if let Some(token) = context
-            .next_if_matched(|token| token.category == TokenCategory::PunctuationRightSquareBracket)
+            .next_if_matched(|token| token.category == TokenCategory::PunctuationLeftSquareBracket)
         {
             token.clone()
         } else {
