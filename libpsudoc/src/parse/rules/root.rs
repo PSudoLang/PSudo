@@ -28,6 +28,7 @@ impl ParseFunction for Root {
                     nodes.push(node);
                 }
                 ParseResult::Fail(val) => {
+                    context.next();
                     if !val {
                         context
                             .last_read_token()

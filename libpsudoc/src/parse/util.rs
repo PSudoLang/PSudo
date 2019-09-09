@@ -22,7 +22,5 @@ pub fn try_all<T>(
         }
     }
 
-    context.next();
-
     ParseResult::Fail(false)
 }
