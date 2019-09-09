@@ -1,3 +1,6 @@
+use crate::coretypes::{CompileSession, RichDebug};
+use crate::util;
+
 type TokenUsed = bool;
 
 pub enum ParseResult<T> {
@@ -32,6 +35,21 @@ impl<T> ParseResult<T> {
         match &self {
             ParseResult::Success(..) => self,
             _ => or_function(),
+        }
+    }
+}
+
+impl<T> RichDebug for ParseResult<T>
+where
+    T: RichDebug,
+{
+    fn rich_debug(&self, session: &CompileSession) -> String {
+        match self {
+            ParseResult::Success(value) => format!(
+                "ParseResult::Success(\n{}\n)",
+                util::indented(value.rich_debug(session))
+            ),
+            ParseResult::Fail(val) => format!("ParseResult::Fail({})", val),
         }
     }
 }
