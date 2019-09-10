@@ -31,16 +31,17 @@ macro_rules! binary_operator {
                     ParseResult::Success(rhs) => {
                         context.operator_precedence = precedence_back;
                         ParseResult::Success(Box::new(move |lhs| {
-                        ExpressionNode::Operator(OperatorExpression::Binary(
-                            lhs.span().joined(&rhs.span()).expect("In the same file"),
-                            match operator.category {
-                                $($token_category => $operator_kind,)*
-                                _ => panic!("Can't reach."),
-                            },
-                            Box::new(lhs),
-                            Box::new(rhs),
-                        ))
-                    }))},
+                            ExpressionNode::Operator(OperatorExpression::Binary(
+                                lhs.span().joined(&rhs.span()).expect("In the same file"),
+                                match operator.category {
+                                    $($token_category => $operator_kind,)*
+                                    _ => panic!("Can't reach."),
+                                },
+                                Box::new(lhs),
+                                Box::new(rhs),
+                            ))
+                        }))
+                    },
                     ParseResult::Fail(_) => {
                         context.operator_precedence = precedence_back;
                         ParseResult::Fail(true)
