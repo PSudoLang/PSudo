@@ -36,7 +36,8 @@ impl ParseFunction for Expression {
         while mutated {
             mutated = false;
             result = result.flat_map(|lhs| {
-                let parse_functions: &[Option<fn(&mut _, &mut _) -> _>] = &[
+                let postfix_operations: &[Option<fn(&mut _, &mut _) -> _>] = &[
+                    Some(FieldGet::try_parse),
                     Some(Index::try_parse),
                     filter_binary_operator!(10, BinaryOperator10, context),
                     filter_binary_operator!(9, BinaryOperator9, context),
@@ -50,7 +51,7 @@ impl ParseFunction for Expression {
                     filter_binary_operator!(1, BinaryOperator1, context),
                 ];
                 match try_all(
-                    &parse_functions
+                    &postfix_operations
                         .iter()
                         .filter(|it| it.is_some())
                         .map(|it| it.unwrap())

@@ -1,6 +1,9 @@
 use crate::coretypes::{CompileSession, RichDebug, Span, Spanned};
 use crate::util::indented;
 
+// Whether the field get syntax is `a?.b` not `a.b`
+type IsNullSafe = bool;
+
 pub enum Expression {
     Literal(Literal),
     Unit(Span),
@@ -9,7 +12,7 @@ pub enum Expression {
     Tuple(Span, Vec<Expression>),
     Operator(OperatorExpression),
     Member(MemberExpression),
-    FieldGet(Span, Box<Expression>, String),
+    FieldGet(Span, Box<Expression>, String, IsNullSafe),
     ControlFlow(ControlFlowExpression),
 }
 
@@ -56,6 +59,16 @@ impl RichDebug for Expression {
                 )
             ),
             Expression::Operator(operator_expression) => operator_expression.rich_debug(session),
+            Expression::FieldGet(_, expression, field_name, is_null_safe) => format!(
+                "FieldGet{} \"{}\" {{\n{}}}",
+                if *is_null_safe {
+                    " with null-safety"
+                } else {
+                    ""
+                },
+                field_name,
+                indented(expression.rich_debug(session))
+            ),
             _ => "Unknown Expression".into(),
         }
     }
@@ -64,7 +77,7 @@ impl RichDebug for Expression {
 pub enum OperatorExpression {
     Unary(Span, UnaryOperator, Box<Expression>),
     Binary(Span, BinaryOperator, Box<Expression>, Box<Expression>),
-    Call(Span, String, Vec<Expression>),
+    Call(Span, String, Vec<Expression>, IsNullSafe),
 }
 
 impl RichDebug for OperatorExpression {
@@ -202,45 +215,45 @@ pub enum BinaryOperator {
     /// &&
     LogicalAnd,
     /// ||
-    LogicalOr,     
+    LogicalOr,
     /// ==
-    Equals,           
+    Equals,
     /// !=
-    NotEquals,         
+    NotEquals,
     /// <
-    LessThan,          
+    LessThan,
     /// <=
-    LessThanEquals,    
+    LessThanEquals,
     /// >
-    GreaterThan,       
+    GreaterThan,
     /// >=
     GreaterThanEquals,
     /// <=>
     ThreeWayComparison,
     /// &
-    BitwiseAnd,        
+    BitwiseAnd,
     /// ^
-    BitwiseXor,        
+    BitwiseXor,
     /// |
-    BitwiseOr,         
+    BitwiseOr,
     /// <<
-    LeftShift,         
+    LeftShift,
     /// >>
-    RightShift,        
+    RightShift,
     /// %
-    Remainder,         
+    Remainder,
     /// *
-    Times,             
+    Times,
     /// +
-    Add,               
+    Add,
     /// -
-    Subtract,          
+    Subtract,
     /// /
-    Divide,            
+    Divide,
     /// [x]
-    Index,             
+    Index,
     /// ..
-    RangeInclusive,    
+    RangeInclusive,
     /// ..<
-    RangeExclusive,  
+    RangeExclusive,
 }
