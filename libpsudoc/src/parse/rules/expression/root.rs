@@ -3,6 +3,16 @@ use crate::coretypes::Expression as ExpressionNode;
 
 pub struct Expression;
 
+macro_rules! filter_binary_operator {
+    ($level:expr, $type:ty, $ident:ident) => {
+        if $ident.operator_precedence > $level {
+            Some(<$type>::try_parse)
+        } else {
+            None
+        }
+    };
+}
+
 impl ParseFunction for Expression {
     type Output = ExpressionNode;
     fn try_parse(
@@ -28,16 +38,16 @@ impl ParseFunction for Expression {
             result = result.flat_map(|lhs| {
                 let parse_functions: &[Option<fn(&mut _, &mut _) -> _>] = &[
                     Some(Index::try_parse),
-                    if context.operator_precedence > 2 {
-                        Some(BinaryOperator2::try_parse)
-                    } else {
-                        None
-                    },
-                    if context.operator_precedence > 1 {
-                        Some(BinaryOperator1::try_parse)
-                    } else {
-                        None
-                    },
+                    filter_binary_operator!(10, BinaryOperator10, context),
+                    filter_binary_operator!(9, BinaryOperator9, context),
+                    filter_binary_operator!(8, BinaryOperator8, context),
+                    filter_binary_operator!(7, BinaryOperator7, context),
+                    filter_binary_operator!(6, BinaryOperator6, context),
+                    filter_binary_operator!(5, BinaryOperator5, context),
+                    filter_binary_operator!(4, BinaryOperator4, context),
+                    filter_binary_operator!(3, BinaryOperator3, context),
+                    filter_binary_operator!(2, BinaryOperator2, context),
+                    filter_binary_operator!(1, BinaryOperator1, context),
                 ];
                 match try_all(
                     &parse_functions
