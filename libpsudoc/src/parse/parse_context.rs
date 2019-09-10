@@ -64,10 +64,11 @@ impl ParseContext {
     where
         F: Fn(&Token) -> bool,
     {
-        let next = self.next();
-        if let Some(token) = &next {
-            if predicate(token) {
-                next
+        if self.has_next() {
+            let next = &self.tokens[self.current];
+            if predicate(next) {
+                self.current += 1;
+                Some(next)
             } else {
                 None
             }
