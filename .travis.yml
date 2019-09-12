@@ -6,10 +6,10 @@ rust:
 addons:
   apt:
     sources:
-      - sourceline: "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial main"
+      - sourceline: "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main"
         key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
     packages:
-      - llvm-8
+      - llvm-9
 matrix:
   allow_failures:
     - rust: nightly
