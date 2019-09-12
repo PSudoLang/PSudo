@@ -1,3 +1,10 @@
 fn hello_world(n: i32): i32 {
+    if true {
+        output "Dreams come true"
+    } else if true {
+        output "It never runs"
+    } else {
+        output "Also it never runs"
+    }
     output 1 * 2 + 1 * [4][(0..1).start]
 }

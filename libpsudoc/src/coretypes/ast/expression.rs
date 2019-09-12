@@ -1,4 +1,4 @@
-use crate::coretypes::{CompileSession, RichDebug, Span, Spanned};
+use crate::coretypes::{Block, CompileSession, RichDebug, Span, Spanned};
 use crate::util::indented;
 
 // Whether the field get syntax is `a?.b` not `a.b`
@@ -69,6 +69,9 @@ impl RichDebug for Expression {
                 field_name,
                 indented(expression.rich_debug(session))
             ),
+            Expression::ControlFlow(control_flow_expression) => {
+                control_flow_expression.rich_debug(session)
+            }
             _ => "Unknown Expression".into(),
         }
     }
@@ -158,14 +161,95 @@ impl Spanned for MemberExpression {
 
 pub enum ControlFlowExpression {
     Loop(Span),
-    If(Span),
+    If(If),
+}
+
+impl RichDebug for ControlFlowExpression {
+    fn rich_debug(&self, session: &CompileSession) -> String {
+        match self {
+            ControlFlowExpression::If(r#if) => r#if.rich_debug(session),
+            _ => "Unknown Control Flow Expression".into(),
+        }
+    }
+}
+
+pub struct If {
+    pub span: Span,
+    pub condition: Box<Expression>,
+    pub if_branch: Block,
+    pub else_branch: Option<Box<Else>>,
+}
+
+impl RichDebug for If {
+    fn rich_debug(&self, session: &CompileSession) -> String {
+        format!(
+            "if {} {{\n{}\n}}{}",
+            self.condition.rich_debug(session),
+            indented(if self.if_branch.1.is_empty() {
+                "empty block".into()
+            } else {
+                self.if_branch
+                    .1
+                    .iter()
+                    .map(|statement| statement.rich_debug(session))
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            }),
+            if let Some(else_branch) = &self.else_branch {
+                format!(" {}", else_branch.rich_debug(session))
+            } else {
+                "".into()
+            }
+        )
+    }
+}
+
+impl Spanned for If {
+    fn span(&self) -> Span {
+        self.span.clone()
+    }
+}
+
+pub enum Else {
+    ElseIf(Span, Box<If>),
+    Else(Span, Block),
+}
+
+impl RichDebug for Else {
+    fn rich_debug(&self, session: &CompileSession) -> String {
+        match self {
+            Else::ElseIf(_, r#if) => format!("else {}", r#if.rich_debug(session)),
+            Else::Else(_, block) => format!(
+                "else {{\n{}\n}}",
+                indented(if block.1.is_empty() {
+                    "empty block".into()
+                } else {
+                    block
+                        .1
+                        .iter()
+                        .map(|statement| statement.rich_debug(session))
+                        .collect::<Vec<_>>()
+                        .join("\n")
+                })
+            ),
+        }
+    }
+}
+
+impl Spanned for Else {
+    fn span(&self) -> Span {
+        match &self {
+            Else::ElseIf(span, ..) => span.clone(),
+            Else::Else(span, ..) => span.clone(),
+        }
+    }
 }
 
 impl Spanned for ControlFlowExpression {
     fn span(&self) -> Span {
         match self {
             ControlFlowExpression::Loop(span, ..) => span.clone(),
-            ControlFlowExpression::If(span, ..) => span.clone(),
+            ControlFlowExpression::If(r#if) => r#if.span(),
         }
     }
 }

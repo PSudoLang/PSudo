@@ -26,6 +26,7 @@ impl ParseFunction for Expression {
                 NumberLiteral::try_parse,
                 Group::try_parse,
                 Array::try_parse,
+                If::try_parse,
                 PrefixUnaryOperator::try_parse,
             ],
             context,
