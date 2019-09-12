@@ -1,5 +1,7 @@
 # The PSudo Programming Language
 
+![Travis (.com)](https://img.shields.io/travis/com/PSudoLang/PSudo)
+
 This is the main source code repository for PSudo. It contains the compiler, standard library.
 
 ## Contains
