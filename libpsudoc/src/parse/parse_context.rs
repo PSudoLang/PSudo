@@ -103,4 +103,14 @@ impl ParseContext {
             operator_precedence: self.operator_precedence,
         }
     }
+
+    pub fn apply_operator_precedence(&mut self, apply: usize) -> usize {
+        let before_precedence = self.operator_precedence;
+        self.operator_precedence = apply;
+        before_precedence
+    }
+
+    pub fn reset_operator_precedence(&mut self) -> usize {
+        self.apply_operator_precedence(usize::max_value())
+    }
 }

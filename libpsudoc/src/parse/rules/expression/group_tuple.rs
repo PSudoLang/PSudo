@@ -20,9 +20,12 @@ impl ParseFunction for Group {
             return ParseResult::Fail(false);
         };
 
+        let before_precedence = context.reset_operator_precedence();
+
         let mut expressions = Vec::new();
         let mut expect_comma = false;
         let mut is_failed = false;
+
         context.skip_whitespaces(true);
 
         while let Some(token) = context.peek().cloned() {
@@ -67,7 +70,12 @@ impl ParseFunction for Group {
                     is_failed = true;
                 }
             }
+
+            context.skip_whitespaces(true);
         }
+
+        context.operator_precedence = before_precedence;
+
         if is_failed {
             return ParseResult::Fail(true);
         }

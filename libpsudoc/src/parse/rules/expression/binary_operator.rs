@@ -24,12 +24,11 @@ macro_rules! binary_operator {
                 } else {
                     return ParseResult::Fail(false);
                 };
-                let precedence_back = context.operator_precedence;
-                context.operator_precedence = $level;
+                let before_precedence = context.apply_operator_precedence($level);
                 context.skip_whitespaces(true);
                 match Expression::try_parse(context, session) {
                     ParseResult::Success(rhs) => {
-                        context.operator_precedence = precedence_back;
+                        context.operator_precedence = before_precedence;
                         ParseResult::Success(Box::new(move |lhs| {
                             ExpressionNode::Operator(OperatorExpression::Binary(
                                 lhs.span().joined(&rhs.span()).expect("In the same file"),
@@ -43,7 +42,7 @@ macro_rules! binary_operator {
                         }))
                     },
                     ParseResult::Fail(_) => {
-                        context.operator_precedence = precedence_back;
+                        context.operator_precedence = before_precedence;
                         ParseResult::Fail(true)
                     },
                 }
