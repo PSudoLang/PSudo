@@ -3,6 +3,8 @@ rust:
   - stable
   - beta
   - nightly
+before_install:
+  - apt install -y llvm-8
 matrix:
   allow_failures:
     - rust: nightly
