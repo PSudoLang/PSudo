@@ -4,7 +4,8 @@ rust:
   - beta
   - nightly
 before_install:
-  - sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+  - sudo apt upgrade
+  - sudo apt install llvm-8
 matrix:
   allow_failures:
     - rust: nightly
