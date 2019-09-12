@@ -1,5 +1,5 @@
 language: rust
-dist: trusty
+dist: precise
 rust:
   - stable
   - beta
@@ -7,7 +7,7 @@ rust:
 addons:
   apt:
     packages:
-      - llvm
+      - llvm-8
 matrix:
   allow_failures:
     - rust: nightly
