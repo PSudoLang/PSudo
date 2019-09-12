@@ -1,13 +1,10 @@
 language: rust
-dist: precise
 rust:
   - stable
   - beta
   - nightly
-addons:
-  apt:
-    packages:
-      - llvm-8
+before_install:
+  - bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
 matrix:
   allow_failures:
     - rust: nightly
