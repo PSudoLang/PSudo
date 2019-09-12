@@ -4,7 +4,7 @@ rust:
   - beta
   - nightly
 before_install:
-  - bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+  - sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
 matrix:
   allow_failures:
     - rust: nightly
