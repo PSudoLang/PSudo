@@ -59,13 +59,13 @@ impl ParseFunction for NumberLiteral {
         context: &mut ParseContext,
         session: &mut CompileSession,
     ) -> ParseResult<Self::Output> {
-        if let Some(token) = context.next() {
+        if let Some(token) = context.next().cloned() {
             if token.category == TokenCategory::LiteralNumber {
                 return ParseResult::Success(Expression::Literal(
                     if token.span.source_text(session).contains('.') {
-                        Literal::Decimal(token.span.clone())
+                        Literal::Decimal(token.span)
                     } else {
-                        Literal::Integer(token.span.clone())
+                        Literal::Integer(token.span)
                     },
                 ));
             }
