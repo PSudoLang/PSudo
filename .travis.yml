@@ -7,7 +7,7 @@ rust:
 addons:
   apt:
     packages:
-      - llvm-8
+      - llvm
 matrix:
   allow_failures:
     - rust: nightly
