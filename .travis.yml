@@ -3,9 +3,14 @@ rust:
   - stable
   - beta
   - nightly
-before_install:
-  - sudo apt upgrade
-  - sudo apt install llvm-8
+addons:
+  apt:
+    sources:
+      - sourceline: "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial main"
+        key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
+    packages:
+      - llvm-8-dev
+      - llvm-8-tools
 matrix:
   allow_failures:
     - rust: nightly
