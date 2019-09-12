@@ -94,7 +94,66 @@ pub enum TokenCategory {
     PunctuationsRangeExclusive,
 
     // Group: Keyword
-    Keyword, // TODO: Separating
+    /// Keyword `as`
+    KeywordAs,
+    /// Keyword `break`
+    KeywordBreak,
+    /// Keyword `continue`
+    KeywordContinue,
+    /// Keyword `const`
+    KeywordConst,
+    /// Keyword `else`
+    KeywordElse,
+    /// Keyword `enum`
+    KeywordEnum,
+    /// Keyword `extern`
+    KeywordExtern,
+    /// Keyword `fn`
+    KeywordFn,
+    /// Keyword `for`
+    KeywordFor,
+    /// Keyword `if`
+    KeywordIf,
+    /// Keyword `impl`
+    KeywordImpl,
+    /// Keyword `in`
+    KeywordIn,
+    /// Keyword `let`
+    KeywordLet,
+    /// Keyword `loop`
+    KeywordLoop,
+    /// Keyword `match`
+    KeywordMatch,
+    /// Keyword `move`
+    KeywordMove,
+    /// Keyword `ref`
+    KeywordRef,
+    /// Keyword `return`
+    KeywordReturn,
+    /// Keyword `self`
+    KeywordSelf,
+    /// Keyword `Self`
+    KeywordSelfType,
+    /// Keyword `static`
+    KeywordStatic,
+    /// Keyword `struct`
+    KeywordStruct,
+    /// Keyword `super`
+    KeywordSuper,
+    /// Keyword `trait`
+    KeywordTrait,
+    /// Keyword `type`
+    KeywordType,
+    /// Keyword `where`
+    KeywordWhere,
+    /// Keyword `while`
+    KeywordWhile,
+    /// Keyword `input`
+    KeywordInput,
+    /// Keyword `output`
+    KeywordOutput,
+    /// Keyword `log`
+    KeywordLog,
 
     // Group: Identifier
     IdentifierIdentifier,

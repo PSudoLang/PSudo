@@ -12,13 +12,12 @@ impl ParseFunction for Function {
         context: &mut ParseContext,
         session: &mut CompileSession,
     ) -> ParseResult<Self::Output> {
-        let fn_keyword = if let Some(token) = context.next_if_matched(|token| {
-            token.category == TokenCategory::Keyword && token.span.source_text(session) == "fn"
-        }) {
-            token.clone()
-        } else {
-            return ParseResult::Fail(false);
-        };
+        let fn_keyword =
+            if let Some(token) = context.next_token_categoried(&[TokenCategory::KeywordFn]) {
+                token.clone()
+            } else {
+                return ParseResult::Fail(false);
+            };
 
         context.skip_whitespaces(false);
 

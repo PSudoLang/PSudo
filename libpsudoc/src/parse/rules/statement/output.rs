@@ -9,17 +9,12 @@ impl ParseFunction for Output {
         context: &mut ParseContext,
         session: &mut CompileSession,
     ) -> ParseResult<Self::Output> {
-        let output_keyword = if let Some(token) = context.next().cloned() {
-            token
-        } else {
-            return ParseResult::Fail(false);
-        };
-
-        if output_keyword.category != TokenCategory::Keyword
-            || output_keyword.span.source_text(session) != "output"
-        {
-            return ParseResult::Fail(false);
-        }
+        let output_keyword =
+            if let Some(token) = context.next_token_categoried(&[TokenCategory::KeywordOutput]) {
+                token.clone()
+            } else {
+                return ParseResult::Fail(false);
+            };
 
         context.skip_whitespaces(false);
 
