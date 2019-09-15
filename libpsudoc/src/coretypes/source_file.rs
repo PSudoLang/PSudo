@@ -45,7 +45,8 @@ impl SourceFile {
             src: src.clone(),
             line_begins: [
                 vec![0],
-                src.char_indices()
+                src.chars()
+                    .enumerate()
                     .filter(|(_, character)| {
                         CodeCharacter::new(*character).category
                             == CodeCharacterCategory::VerticalSpace
