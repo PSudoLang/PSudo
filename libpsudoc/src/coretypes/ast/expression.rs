@@ -169,12 +169,16 @@ impl Spanned for MemberExpression {
 pub enum ControlFlowExpression {
     Loop(Span),
     If(If),
+    Return(Span, Box<Expression>),
 }
 
 impl RichDebug for ControlFlowExpression {
     fn rich_debug(&self, session: &CompileSession) -> String {
         match self {
             ControlFlowExpression::If(r#if) => r#if.rich_debug(session),
+            ControlFlowExpression::Return(_, expr) => {
+                format!("Return {{\n{}\n}}", indented(expr.rich_debug(session)))
+            }
             _ => "Unknown Control Flow Expression".into(),
         }
     }
@@ -257,6 +261,7 @@ impl Spanned for ControlFlowExpression {
         match self {
             ControlFlowExpression::Loop(span, ..) => span.clone(),
             ControlFlowExpression::If(r#if) => r#if.span(),
+            ControlFlowExpression::Return(span, ..) => span.clone(),
         }
     }
 }

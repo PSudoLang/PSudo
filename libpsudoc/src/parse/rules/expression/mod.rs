@@ -7,6 +7,7 @@ mod group_tuple;
 mod r#if;
 mod index;
 mod literal;
+mod r#return;
 mod root;
 mod unary_operator;
 
@@ -17,5 +18,6 @@ pub use group_tuple::*;
 pub use index::*;
 pub use literal::*;
 pub use r#if::*;
+pub use r#return::*;
 pub use root::*;
 pub use unary_operator::*;

@@ -21,6 +21,7 @@ impl ParseFunction for Expression {
     ) -> ParseResult<Self::Output> {
         let mut result = try_all(
             &[
+                Return::try_parse,
                 BooleanLiteral::try_parse,
                 StringLiteral::try_parse,
                 NumberLiteral::try_parse,
