@@ -12,7 +12,6 @@ pub enum Expression {
     Tuple(Span, Vec<Expression>),
     Operator(OperatorExpression),
     Member(MemberExpression),
-    FieldGet(Span, Box<Expression>, String, IsNullSafe),
     ControlFlow(ControlFlowExpression),
 }
 
@@ -24,7 +23,6 @@ impl Spanned for Expression {
             Expression::Unit(span) => span.clone(),
             Expression::Group(span, ..) => span.clone(),
             Expression::Operator(expression) => expression.span(),
-            Expression::FieldGet(span, ..) => span.clone(),
             Expression::Member(expression) => expression.span(),
             Expression::ControlFlow(expression) => expression.span(),
             Expression::Array(span, ..) => span.clone(),
@@ -59,16 +57,6 @@ impl RichDebug for Expression {
                 )
             ),
             Expression::Operator(operator_expression) => operator_expression.rich_debug(session),
-            Expression::FieldGet(_, expression, field_name, is_null_safe) => format!(
-                "FieldGet{} \"{}\" {{\n{}}}",
-                if *is_null_safe {
-                    " with null-safety"
-                } else {
-                    ""
-                },
-                field_name,
-                indented(expression.rich_debug(session))
-            ),
             Expression::ControlFlow(control_flow_expression) => {
                 control_flow_expression.rich_debug(session)
             }
@@ -146,8 +134,26 @@ impl Spanned for OperatorExpression {
 }
 
 pub enum MemberExpression {
-    Field(Span),
+    Field(Span, Box<Expression>, String, IsNullSafe),
     Method(Span),
+}
+
+impl RichDebug for MemberExpression {
+    fn rich_debug(&self, session: &CompileSession) -> String {
+        match self {
+            MemberExpression::Field(_, expression, field_name, is_null_safe) => format!(
+                "Field{} \"{}\" {{\n{}\n}}",
+                if *is_null_safe {
+                    " with null-safety"
+                } else {
+                    ""
+                },
+                field_name,
+                indented(expression.rich_debug(session))
+            ),
+            _ => "Unknown Member Expression".into(),
+        }
+    }
 }
 
 impl Spanned for MemberExpression {

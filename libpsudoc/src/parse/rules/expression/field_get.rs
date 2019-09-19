@@ -1,6 +1,6 @@
 use super::*;
 
-use crate::coretypes::{Expression, Spanned, Token, TokenCategory};
+use crate::coretypes::{Expression, MemberExpression, Spanned, Token, TokenCategory};
 
 pub struct FieldGet;
 
@@ -33,12 +33,12 @@ impl ParseFunction for FieldGet {
             }) => {
                 let text = span.source_text(&session);
                 ParseResult::Success(Box::new(move |lhs| {
-                    Expression::FieldGet(
+                    Expression::Member(MemberExpression::Field(
                         lhs.span().joined(&span).expect("In the same file"),
                         Box::new(lhs),
                         text,
                         question,
-                    )
+                    ))
                 }))
             }
             Some(token) => {
