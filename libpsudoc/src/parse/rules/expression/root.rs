@@ -40,6 +40,7 @@ impl ParseFunction for Expression {
                 let postfix_operations: &[Option<fn(&mut _, &mut _) -> _>] = &[
                     Some(FieldGet::try_parse),
                     Some(Index::try_parse),
+                    Some(PostfixUnaryOperator::try_parse),
                     filter_binary_operator!(10, BinaryOperator10, context),
                     filter_binary_operator!(9, BinaryOperator9, context),
                     filter_binary_operator!(8, BinaryOperator8, context),

@@ -48,3 +48,36 @@ impl ParseFunction for PrefixUnaryOperator {
         }
     }
 }
+
+pub struct PostfixUnaryOperator;
+
+impl ParseFunction for PostfixUnaryOperator {
+    type Output = Box<dyn FnOnce(ExpressionNode) -> ExpressionNode>;
+
+    fn try_parse(context: &mut ParseContext, _: &mut CompileSession) -> ParseResult<Self::Output> {
+        context.skip_whitespaces(true);
+        if let Some(token) = context
+            .next_token_categoried(&[
+                TokenCategory::PunctuationExclamationMark, // null assertion operator
+                TokenCategory::PunctuationsIncrement,      // postfix increment operator
+                TokenCategory::PunctuationsDecrement,      // postfix decrement operator
+            ])
+            .cloned()
+        {
+            ParseResult::Success(Box::new(move |lhs| {
+                ExpressionNode::Operator(OperatorExpression::Unary(
+                    token.span.joined(&lhs.span()).expect("In the same file"),
+                    match token.category {
+                        TokenCategory::PunctuationExclamationMark => UnaryOperator::NullAssertion,
+                        TokenCategory::PunctuationsIncrement => UnaryOperator::PostfixIncrement,
+                        TokenCategory::PunctuationsDecrement => UnaryOperator::PostfixDecrement,
+                        _ => panic!("Can't reach."),
+                    },
+                    Box::new(lhs),
+                ))
+            }))
+        } else {
+            ParseResult::Fail(false)
+        }
+    }
+}

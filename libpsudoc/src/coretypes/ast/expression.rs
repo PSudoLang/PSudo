@@ -115,6 +115,7 @@ impl RichDebug for OperatorExpression {
                     UnaryOperator::PostfixIncrement => "\"PostfixIncrement\"(x++)",
                     UnaryOperator::PrefixDecrement => "\"PrefixDecrement\"(--x)",
                     UnaryOperator::PostfixDecrement => "\"PostfixDecrement\"(--x)",
+                    UnaryOperator::NullAssertion => "\"NullAssertion\"(x!)",
                 },
                 indented(expression.rich_debug(session))
             ),
@@ -290,15 +291,26 @@ impl Spanned for Literal {
 }
 
 pub enum UnaryOperator {
-    Reference,        // &
-    Plus,             // +
-    Minus,            // -
-    LogicalNot,       // !
-    BitwiseNot,       // ~
-    PrefixIncrement,  // ++x
-    PostfixIncrement, // x++
-    PrefixDecrement,  // --x
-    PostfixDecrement, // x--
+    /// &x
+    Reference,
+    /// +x
+    Plus,
+    /// -x
+    Minus,
+    /// !x
+    LogicalNot,
+    /// ~x
+    BitwiseNot,
+    /// ++x
+    PrefixIncrement,
+    // --x
+    PrefixDecrement,
+    /// x++
+    PostfixIncrement,
+    /// x--
+    PostfixDecrement,
+    /// x!
+    NullAssertion,
 }
 
 pub enum BinaryOperator {
