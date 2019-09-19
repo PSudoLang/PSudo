@@ -44,7 +44,9 @@ impl SourceFile {
             path,
             src: src.clone(),
             line_begins: [
+                // virtual line 0
                 vec![0],
+                // actual lines
                 src.chars()
                     .enumerate()
                     .filter(|(_, character)| {
@@ -53,6 +55,8 @@ impl SourceFile {
                     })
                     .map(|(offset, _)| offset + 1)
                     .collect(),
+                // virtual line 1 + last
+                vec![src.chars().count() + 1],
             ]
             .concat(),
             unique_key: ID.with(|id| {

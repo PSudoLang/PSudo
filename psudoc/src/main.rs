@@ -1,6 +1,7 @@
 mod cli_argument;
 mod code_highlight;
 mod debug_diagnostic;
+mod util;
 
 use cli_argument::*;
 use debug_diagnostic::debug_diagnostic;
