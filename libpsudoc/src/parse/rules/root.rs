@@ -35,7 +35,6 @@ impl ParseFunction for Root {
                             .span
                             .diagnostic_error("Unexpected token")
                             .emit_to(session);
-                        return ParseResult::Fail(true);
                     }
 
                     failed = true;
