@@ -1,5 +1,4 @@
-use crate::coretypes::{Block, CompileSession, RichDebug, Span, Spanned};
-use crate::util::indented;
+use crate::coretypes::{Block, Span, Spanned};
 
 // Whether the field get syntax is `a?.b` not `a.b`
 type IsNullSafe = bool;
@@ -30,98 +29,10 @@ impl Spanned for Expression {
     }
 }
 
-impl RichDebug for Expression {
-    fn rich_debug(&self, session: &CompileSession) -> String {
-        match self {
-            Expression::Unit(..) => "()".into(),
-            Expression::Group(_, expression) => expression.rich_debug(session),
-            Expression::Tuple(_, expressions) => format!(
-                "Tuple {{\n{}\n}}",
-                indented(
-                    expressions
-                        .iter()
-                        .map(|expression| expression.rich_debug(session))
-                        .collect::<Vec<_>>()
-                        .join("\n")
-                )
-            ),
-            Expression::Literal(literal) => literal.rich_debug(session),
-            Expression::Array(_, expressions) => format!(
-                "Array {{\n{}\n}}",
-                indented(
-                    expressions
-                        .iter()
-                        .map(|expression| expression.rich_debug(session))
-                        .collect::<Vec<_>>()
-                        .join("\n")
-                )
-            ),
-            Expression::Operator(operator_expression) => operator_expression.rich_debug(session),
-            Expression::ControlFlow(control_flow_expression) => {
-                control_flow_expression.rich_debug(session)
-            }
-            _ => "Unknown Expression".into(),
-        }
-    }
-}
-
 pub enum OperatorExpression {
     Unary(Span, UnaryOperator, Box<Expression>),
     Binary(Span, BinaryOperator, Box<Expression>, Box<Expression>),
     Call(Span, String, Vec<Expression>, IsNullSafe),
-}
-
-impl RichDebug for OperatorExpression {
-    fn rich_debug(&self, session: &CompileSession) -> String {
-        match self {
-            OperatorExpression::Binary(_, operator, lhs, rhs) => format!(
-                "Binary Operator {} with {{\n{},\n{}\n}}",
-                match operator {
-                    BinaryOperator::LogicalAnd => "\"LogicalAnd\"(lhs && rhs)",
-                    BinaryOperator::LogicalOr => "\"LogicalOr\"(lhs || rhs)",
-                    BinaryOperator::Equals => "\"Equals\"(lhs == rhs)",
-                    BinaryOperator::NotEquals => "\"NotEquals\"(lhs != rhs)",
-                    BinaryOperator::LessThan => "\"LessThan\"(lhs < rhs)",
-                    BinaryOperator::LessThanEquals => "\"LessThanEquals\"(lhs <= rhs)",
-                    BinaryOperator::GreaterThan => "\"GreaterThan\"(lhs > rhs)",
-                    BinaryOperator::GreaterThanEquals => "\"GreaterThanEquals\"(lhs >= rhs)",
-                    BinaryOperator::ThreeWayComparison => "\"Three Way Comparison\"(lhs <=> rhs)",
-                    BinaryOperator::BitwiseAnd => "\"BitwiseAnd\"(lhs & rhs)",
-                    BinaryOperator::BitwiseXor => "\"BitwiseXor\"(lhs ^ rhs)",
-                    BinaryOperator::BitwiseOr => "\"BitwiseOr\"(lhs | rhs)",
-                    BinaryOperator::LeftShift => "\"LeftShift\"(lhs << rhs)",
-                    BinaryOperator::RightShift => "\"RightShift\"(lhs >> rhs)",
-                    BinaryOperator::Remainder => "\"Remainder\"(lhs % rhs)",
-                    BinaryOperator::Times => "\"Times\"(lhs * rhs)",
-                    BinaryOperator::Add => "\"Add\"(lhs + rhs)",
-                    BinaryOperator::Subtract => "\"Subtract\"(lhs - rhs)",
-                    BinaryOperator::Divide => "\"Divide\"(lhs / rhs)",
-                    BinaryOperator::Index => "\"Index\"(lhs[rhs])",
-                    BinaryOperator::RangeInclusive => "\"RangeInclusive\"(lhs..rhs)",
-                    BinaryOperator::RangeExclusive => "\"RangeExclusive\"(lhs..<rhs)",
-                },
-                indented(lhs.rich_debug(session)),
-                indented(rhs.rich_debug(session)),
-            ),
-            OperatorExpression::Unary(_, operator, expression) => format!(
-                "Unary Operator {} with {{\n{}\n}}",
-                match operator {
-                    UnaryOperator::Reference => "\"Reference\"(&)",
-                    UnaryOperator::Plus => "\"Plus\"(+)",
-                    UnaryOperator::Minus => "\"Minus\"(-)",
-                    UnaryOperator::LogicalNot => "\"LogicalNot\"(!)",
-                    UnaryOperator::BitwiseNot => "\"BitwiseNot\"(~)",
-                    UnaryOperator::PrefixIncrement => "\"PrefixIncrement\"(++x)",
-                    UnaryOperator::PostfixIncrement => "\"PostfixIncrement\"(x++)",
-                    UnaryOperator::PrefixDecrement => "\"PrefixDecrement\"(--x)",
-                    UnaryOperator::PostfixDecrement => "\"PostfixDecrement\"(--x)",
-                    UnaryOperator::NullAssertion => "\"NullAssertion\"(x!)",
-                },
-                indented(expression.rich_debug(session))
-            ),
-            _ => "Unknown Operator Expression".into(),
-        }
-    }
 }
 
 impl Spanned for OperatorExpression {
@@ -139,24 +50,6 @@ pub enum MemberExpression {
     Method(Span),
 }
 
-impl RichDebug for MemberExpression {
-    fn rich_debug(&self, session: &CompileSession) -> String {
-        match self {
-            MemberExpression::Field(_, expression, field_name, is_null_safe) => format!(
-                "Field{} \"{}\" {{\n{}\n}}",
-                if *is_null_safe {
-                    " with null-safety"
-                } else {
-                    ""
-                },
-                field_name,
-                indented(expression.rich_debug(session))
-            ),
-            _ => "Unknown Member Expression".into(),
-        }
-    }
-}
-
 impl Spanned for MemberExpression {
     fn span(&self) -> Span {
         match self {
@@ -172,14 +65,12 @@ pub enum ControlFlowExpression {
     Return(Span, Box<Expression>),
 }
 
-impl RichDebug for ControlFlowExpression {
-    fn rich_debug(&self, session: &CompileSession) -> String {
+impl Spanned for ControlFlowExpression {
+    fn span(&self) -> Span {
         match self {
-            ControlFlowExpression::If(r#if) => r#if.rich_debug(session),
-            ControlFlowExpression::Return(_, expr) => {
-                format!("Return {{\n{}\n}}", indented(expr.rich_debug(session)))
-            }
-            _ => "Unknown Control Flow Expression".into(),
+            ControlFlowExpression::Loop(span, ..) => span.clone(),
+            ControlFlowExpression::If(r#if) => r#if.span(),
+            ControlFlowExpression::Return(span, ..) => span.clone(),
         }
     }
 }
@@ -189,30 +80,6 @@ pub struct If {
     pub condition: Box<Expression>,
     pub if_branch: Block,
     pub else_branch: Option<Box<Else>>,
-}
-
-impl RichDebug for If {
-    fn rich_debug(&self, session: &CompileSession) -> String {
-        format!(
-            "if {} {{\n{}\n}}{}",
-            self.condition.rich_debug(session),
-            indented(if self.if_branch.1.is_empty() {
-                "empty block".into()
-            } else {
-                self.if_branch
-                    .1
-                    .iter()
-                    .map(|statement| statement.rich_debug(session))
-                    .collect::<Vec<_>>()
-                    .join("\n")
-            }),
-            if let Some(else_branch) = &self.else_branch {
-                format!(" {}", else_branch.rich_debug(session))
-            } else {
-                "".into()
-            }
-        )
-    }
 }
 
 impl Spanned for If {
@@ -226,27 +93,6 @@ pub enum Else {
     Else(Span, Block),
 }
 
-impl RichDebug for Else {
-    fn rich_debug(&self, session: &CompileSession) -> String {
-        match self {
-            Else::ElseIf(_, r#if) => format!("else {}", r#if.rich_debug(session)),
-            Else::Else(_, block) => format!(
-                "else {{\n{}\n}}",
-                indented(if block.1.is_empty() {
-                    "empty block".into()
-                } else {
-                    block
-                        .1
-                        .iter()
-                        .map(|statement| statement.rich_debug(session))
-                        .collect::<Vec<_>>()
-                        .join("\n")
-                })
-            ),
-        }
-    }
-}
-
 impl Spanned for Else {
     fn span(&self) -> Span {
         match &self {
@@ -256,31 +102,11 @@ impl Spanned for Else {
     }
 }
 
-impl Spanned for ControlFlowExpression {
-    fn span(&self) -> Span {
-        match self {
-            ControlFlowExpression::Loop(span, ..) => span.clone(),
-            ControlFlowExpression::If(r#if) => r#if.span(),
-            ControlFlowExpression::Return(span, ..) => span.clone(),
-        }
-    }
-}
-
 pub enum Literal {
     Boolean(Span, bool),
     String(Span, String),
     Integer(Span),
     Decimal(Span),
-}
-
-impl RichDebug for Literal {
-    fn rich_debug(&self, session: &CompileSession) -> String {
-        match self {
-            Literal::Boolean(.., val) => format!("{:?}", val),
-            Literal::String(.., val) => format!("{:?}", val),
-            Literal::Integer(span) | Literal::Decimal(span) => span.source_text(session),
-        }
-    }
 }
 
 impl Spanned for Literal {

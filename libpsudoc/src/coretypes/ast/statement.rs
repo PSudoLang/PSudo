@@ -1,6 +1,4 @@
-use super::{Block, Declaration, Expression};
-use crate::coretypes::{CompileSession, RichDebug, Span, Spanned};
-use crate::util::indented;
+use crate::coretypes::{Block, Declaration, Expression, Span, Spanned};
 
 type ToPrintLinefeed = bool;
 
@@ -24,33 +22,6 @@ impl Spanned for Statement {
             Statement::Output(span, ..) => span.clone(),
             Statement::Declaration(declaration) => declaration.span(),
             Statement::Block(block) => block.span(),
-        }
-    }
-}
-
-impl RichDebug for Statement {
-    fn rich_debug(&self, session: &CompileSession) -> String {
-        match self {
-            Statement::Output(_, expressions, to_print_linefeed) => format!(
-                "Output{} {{\n{}\n}}",
-                if *to_print_linefeed {
-                    ""
-                } else {
-                    "(No Linefeed)"
-                },
-                indented(
-                    expressions
-                        .iter()
-                        .map(|expression| expression.rich_debug(session))
-                        .collect::<Vec<_>>()
-                        .join("\n")
-                )
-            ),
-            Statement::Expression(expression) => {
-                format!("Statement :: {}", expression.rich_debug(session))
-            }
-            Statement::Declaration(declaration) => declaration.rich_debug(session),
-            _ => "Unknown Statement".into(),
         }
     }
 }
