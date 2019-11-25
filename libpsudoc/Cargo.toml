@@ -8,6 +8,6 @@ edition = "2018"
 
 [dependencies]
 llvm-sys = "80.1.1"
-num-traits = "0.2.9"
+num-traits = "0.2.10"
 num-bigint = "0.2.3"
 lazy_static = "1.4.0"
