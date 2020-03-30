@@ -14,5 +14,5 @@ structopt = "0.3.12"
 lazy_static = "1.4.0"
 
 [dependencies.syntect]
-version = "3.3.0"
+version = "4.0.0"
 features = ["parsing", "yaml-load"]
