@@ -1,0 +1,13 @@
+version: 2
+updates:
+- package-ecosystem: cargo
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  labels:
+  - "Category: Dependency"
+  ignore:
+  - dependency-name: llvm-sys
+    versions:
+    - 110.0.0
